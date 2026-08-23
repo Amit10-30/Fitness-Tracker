@@ -399,6 +399,12 @@ Year
 Progress
 </button>
 
+<button
+    onclick="showPage('friends', this)"
+>
+Friends 👥
+</button>
+
 </nav>
 
 
@@ -582,10 +588,112 @@ See how your rep counts have changed over time.
 </section>
 
 
+<!-- FRIENDS -->
+
+<section id="friends" class="page hidden">
+
+    <div class="card">
+
+        <h2>👥 Friends</h2>
+
+        <p class="message">
+            Add friends and see their shared fitness progress.
+        </p>
+
+        <h3 style="margin-top:20px;">
+            🔎 Find a Friend
+        </h3>
+
+        <input
+            id="friendUsername"
+            placeholder="Enter username"
+        >
+
+        <button
+            class="primary"
+            onclick="searchFriend()"
+        >
+            Search
+        </button>
+
+        <div id="friendSearchResult"></div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>📨 Friend Requests</h2>
+
+        <div id="friendRequests">
+
+            <p class="message">
+                No friend requests.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>🤝 My Friends</h2>
+
+        <div id="friendsList">
+
+            <p class="message">
+                You don't have any friends yet.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>🔒 Sharing Settings</h2>
+
+        <p class="message">
+            Allow accepted friends to see your workouts.
+        </p>
+
+        <button
+            id="sharingButton"
+            class="secondary"
+            onclick="toggleWorkoutSharing()"
+        >
+            Loading...
+        </button>
+
+        <p
+            id="sharingStatus"
+            class="message"
+        ></p>
+
+    </div>
+
+
+    <div
+        id="friendProgress"
+        class="card hidden"
+    >
+
+        <h2 id="friendProgressTitle">
+            📊 Friend Progress
+        </h2>
+
+        <div id="friendProgressContent"></div>
+
+    </div>
+
+</section>
+
+
 </main>
 
 </div>
-
 
 <script>
 
@@ -1968,6 +2076,8 @@ function showPage(page, button) {
 
     if (page === "progress")
         renderProgress();
+    if (page === "friends")
+    loadFriends();
 
 }
 
@@ -2003,7 +2113,996 @@ function showPageById(page) {
 
 }
 
+/* =========================================================
+   FRIENDS V1
+   ========================================================= */
 
+async function getCurrentUser() {
+
+    const {
+        data: {
+            user
+        }
+    } = await supabaseClient.auth.getUser();
+
+    return user;
+
+}
+
+
+/* ---------------------------------------------------------
+   SEARCH FOR USER
+   --------------------------------------------------------- */
+
+async function searchFriend() {
+
+    const username =
+        document
+        .getElementById("friendUsername")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const result =
+        document
+        .getElementById("friendSearchResult");
+
+
+    result.innerHTML = "";
+
+
+    if (!username) {
+
+        result.innerHTML =
+            `<p class="message error">
+                Enter a username.
+            </p>`;
+
+        return;
+
+    }
+
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        data: profiles,
+        error
+    } =
+        await supabaseClient
+        .from("profiles")
+        .select(
+            "id, username, display_name"
+        )
+        .ilike(
+            "username",
+            username
+        )
+        .limit(1);
+
+
+    if (error) {
+
+        console.error(error);
+
+        result.innerHTML =
+            `<p class="message error">
+                ${escapeHTML(error.message)}
+            </p>`;
+
+        return;
+
+    }
+
+
+    if (!profiles || profiles.length === 0) {
+
+        result.innerHTML =
+            `<p class="message">
+                No user found with that username.
+            </p>`;
+
+        return;
+
+    }
+
+
+    const profile =
+        profiles[0];
+
+
+    if (profile.id === user.id) {
+
+        result.innerHTML =
+            `<p class="message">
+                That's your own account 😭
+            </p>`;
+
+        return;
+
+    }
+
+
+    const {
+        data: existing
+    } =
+        await supabaseClient
+        .from("friendships")
+        .select(
+            "id, requester_id, receiver_id, status"
+        )
+        .or(
+            `and(requester_id.eq.${user.id},receiver_id.eq.${profile.id}),and(requester_id.eq.${profile.id},receiver_id.eq.${user.id})`
+        )
+        .maybeSingle();
+
+
+    let buttonHTML = "";
+
+
+    if (!existing) {
+
+        buttonHTML = `
+            <button
+                class="primary"
+                onclick="sendFriendRequest('${profile.id}')"
+            >
+                ➕ Send Friend Request
+            </button>
+        `;
+
+    }
+    else if (existing.status === "accepted") {
+
+        buttonHTML = `
+            <p class="message success">
+                ✅ You are already friends.
+            </p>
+        `;
+
+    }
+    else if (
+        existing.requester_id === user.id
+        &&
+        existing.status === "pending"
+    ) {
+
+        buttonHTML = `
+            <p class="message">
+                📨 Friend request sent.
+            </p>
+        `;
+
+    }
+    else {
+
+        buttonHTML = `
+            <p class="message">
+                📨 This user has already sent you a request.
+                Check your Friend Requests below.
+            </p>
+        `;
+
+    }
+
+
+    result.innerHTML = `
+
+        <div class="exercise-row">
+
+            <div>
+
+                <b>
+                    ${escapeHTML(
+                        profile.display_name ||
+                        profile.username
+                    )}
+                </b>
+
+                <br>
+
+                <span class="message">
+                    @${escapeHTML(profile.username)}
+                </span>
+
+            </div>
+
+            <div>
+                ${buttonHTML}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ---------------------------------------------------------
+   SEND FRIEND REQUEST
+   --------------------------------------------------------- */
+
+async function sendFriendRequest(receiverId) {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("friendships")
+        .insert({
+
+            requester_id:
+                user.id,
+
+            receiver_id:
+                receiverId,
+
+            status:
+                "pending"
+
+        });
+
+
+    if (error) {
+
+        alert(
+            "Could not send friend request:\n" +
+            error.message
+        );
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("friendSearchResult")
+        .innerHTML =
+        `<p class="message success">
+            ✅ Friend request sent!
+        </p>`;
+
+
+    loadFriends();
+
+}
+
+
+/* ---------------------------------------------------------
+   LOAD FRIEND REQUESTS + FRIENDS
+   --------------------------------------------------------- */
+
+async function loadFriends() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    await loadFriendRequests();
+
+    await loadFriendsList();
+
+    await loadSharingSettings();
+
+}
+
+
+/* ---------------------------------------------------------
+   FRIEND REQUESTS
+   --------------------------------------------------------- */
+
+async function loadFriendRequests() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const container =
+        document
+        .getElementById("friendRequests");
+
+
+    const {
+        data: requests,
+        error
+    } =
+        await supabaseClient
+        .from("friendships")
+        .select(
+            "id, requester_id, status"
+        )
+        .eq(
+            "receiver_id",
+            user.id
+        )
+        .eq(
+            "status",
+            "pending"
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+            `<p class="message error">
+                ${escapeHTML(error.message)}
+            </p>`;
+
+        return;
+
+    }
+
+
+    if (!requests.length) {
+
+        container.innerHTML =
+            `<p class="message">
+                No friend requests.
+            </p>`;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    for (const request of requests) {
+
+        const {
+            data: profile
+        } =
+            await supabaseClient
+            .from("profiles")
+            .select(
+                "username, display_name"
+            )
+            .eq(
+                "id",
+                request.requester_id
+            )
+            .single();
+
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            "exercise-row";
+
+
+        row.innerHTML = `
+
+            <div>
+
+                <b>
+                    ${escapeHTML(
+                        profile?.display_name ||
+                        profile?.username ||
+                        "Unknown user"
+                    )}
+                </b>
+
+                <br>
+
+                <span class="message">
+                    @${escapeHTML(
+                        profile?.username || ""
+                    )}
+                </span>
+
+            </div>
+
+            <div>
+
+                <button
+                    class="primary"
+                    onclick="acceptFriendRequest('${request.id}')"
+                >
+                    Accept
+                </button>
+
+                <button
+                    class="danger"
+                    onclick="declineFriendRequest('${request.id}')"
+                >
+                    Decline
+                </button>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(row);
+
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   ACCEPT REQUEST
+   --------------------------------------------------------- */
+
+async function acceptFriendRequest(id) {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("friendships")
+        .update({
+            status: "accepted"
+        })
+        .eq(
+            "id",
+            id
+        )
+        .eq(
+            "receiver_id",
+            user.id
+        );
+
+
+    if (error) {
+
+        alert(
+            "Could not accept request:\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadFriends();
+
+}
+
+
+/* ---------------------------------------------------------
+   DECLINE REQUEST
+   --------------------------------------------------------- */
+
+async function declineFriendRequest(id) {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("friendships")
+        .update({
+            status: "declined"
+        })
+        .eq(
+            "id",
+            id
+        )
+        .eq(
+            "receiver_id",
+            user.id
+        );
+
+
+    if (error) {
+
+        alert(
+            "Could not decline request:\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadFriends();
+
+}
+
+
+/* ---------------------------------------------------------
+   FRIENDS LIST
+   --------------------------------------------------------- */
+
+async function loadFriendsList() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const container =
+        document
+        .getElementById("friendsList");
+
+
+    const {
+        data: friendships,
+        error
+    } =
+        await supabaseClient
+        .from("friendships")
+        .select(
+            "id, requester_id, receiver_id"
+        )
+        .eq(
+            "status",
+            "accepted"
+        )
+        .or(
+            `requester_id.eq.${user.id},receiver_id.eq.${user.id}`
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+            `<p class="message error">
+                ${escapeHTML(error.message)}
+            </p>`;
+
+        return;
+
+    }
+
+
+    if (!friendships.length) {
+
+        container.innerHTML =
+            `<p class="message">
+                You don't have any friends yet.
+            </p>`;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    for (const friendship of friendships) {
+
+        const friendId =
+            friendship.requester_id === user.id
+            ? friendship.receiver_id
+            : friendship.requester_id;
+
+
+        const {
+            data: profile
+        } =
+            await supabaseClient
+            .from("profiles")
+            .select(
+                "username, display_name"
+            )
+            .eq(
+                "id",
+                friendId
+            )
+            .single();
+
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            "exercise-row";
+
+
+        row.innerHTML = `
+
+            <div>
+
+                <b>
+                    ${escapeHTML(
+                        profile?.display_name ||
+                        profile?.username ||
+                        "Friend"
+                    )}
+                </b>
+
+                <br>
+
+                <span class="message">
+                    @${escapeHTML(
+                        profile?.username || ""
+                    )}
+                </span>
+
+            </div>
+
+            <button
+                class="primary"
+                onclick="viewFriendProgress('${friendId}', '${escapeHTML(profile?.username || "Friend")}')"
+            >
+                📊 View Progress
+            </button>
+
+        `;
+
+
+        container.appendChild(row);
+
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   SHARING SETTINGS
+   --------------------------------------------------------- */
+
+async function loadSharingSettings() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        data: settings,
+        error
+    } =
+        await supabaseClient
+        .from("sharing_settings")
+        .select(
+            "share_workouts"
+        )
+        .eq(
+            "user_id",
+            user.id
+        )
+        .single();
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    const button =
+        document
+        .getElementById("sharingButton");
+
+
+    const status =
+        document
+        .getElementById("sharingStatus");
+
+
+    if (settings.share_workouts) {
+
+        button.textContent =
+            "🔓 Workout Sharing: ON";
+
+        status.textContent =
+            "Your accepted friends can see your workouts.";
+
+    }
+    else {
+
+        button.textContent =
+            "🔒 Workout Sharing: OFF";
+
+        status.textContent =
+            "Your workouts are private.";
+
+    }
+
+}
+
+
+async function toggleWorkoutSharing() {
+
+    const user =
+        await getCurrentUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        data: current,
+        error: loadError
+    } =
+        await supabaseClient
+        .from("sharing_settings")
+        .select(
+            "share_workouts"
+        )
+        .eq(
+            "user_id",
+            user.id
+        )
+        .single();
+
+
+    if (loadError) {
+
+        alert(
+            "Could not load sharing settings."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("sharing_settings")
+        .update({
+            share_workouts:
+                !current.share_workouts
+        })
+        .eq(
+            "user_id",
+            user.id
+        );
+
+
+    if (error) {
+
+        alert(
+            "Could not update sharing settings:\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    await loadSharingSettings();
+
+}
+
+
+/* ---------------------------------------------------------
+   VIEW FRIEND PROGRESS
+   --------------------------------------------------------- */
+
+async function viewFriendProgress(
+    friendId,
+    username
+) {
+
+    const container =
+        document
+        .getElementById("friendProgress");
+
+
+    const content =
+        document
+        .getElementById("friendProgressContent");
+
+
+    const title =
+        document
+        .getElementById("friendProgressTitle");
+
+
+    container.classList.remove(
+        "hidden"
+    );
+
+
+    title.textContent =
+        "📊 @" +
+        username +
+        "'s Progress";
+
+
+    content.innerHTML =
+        `<p class="message">
+            Loading...
+        </p>`;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("workouts")
+        .select(
+            "workout_date, exercise_name, reps"
+        )
+        .eq(
+            "user_id",
+            friendId
+        )
+        .order(
+            "workout_date",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        content.innerHTML =
+            `<p class="message error">
+                ${escapeHTML(error.message)}
+            </p>`;
+
+        return;
+
+    }
+
+
+    if (!data.length) {
+
+        content.innerHTML =
+            `<p class="message">
+                No shared workouts yet.
+            </p>`;
+
+        return;
+
+    }
+
+
+    const stats = {};
+
+
+    data.forEach(row => {
+
+        if (!stats[row.exercise_name])
+            stats[row.exercise_name] = [];
+
+
+        stats[row.exercise_name]
+            .push({
+                date:
+                    row.workout_date,
+
+                reps:
+                    Number(row.reps)
+            });
+
+    });
+
+
+    content.innerHTML = "";
+
+
+    Object.entries(stats)
+        .forEach(
+            ([exercise, entries]) => {
+
+                const first =
+                    entries[0].reps;
+
+                const latest =
+                    entries[entries.length - 1]
+                    .reps;
+
+
+                const change =
+                    first > 0
+                    ? (
+                        (latest - first)
+                        / first
+                    ) * 100
+                    : 0;
+
+
+                const card =
+                    document.createElement("div");
+
+
+                card.className =
+                    "stat month-card";
+
+
+                card.innerHTML = `
+
+                    <h3>
+                        ${escapeHTML(exercise)}
+                    </h3>
+
+                    <p class="message">
+                        Starting:
+                        <b>${first}</b> reps
+                    </p>
+
+                    <p class="message">
+                        Latest:
+                        <b>${latest}</b> reps
+                    </p>
+
+                    <p class="message">
+                        Change:
+                        <b class="${
+                            change >= 0
+                            ? "success"
+                            : "error"
+                        }">
+                            ${
+                                change >= 0
+                                ? "+"
+                                : ""
+                            }${change.toFixed(1)}%
+                        </b>
+                    </p>
+
+                `;
+
+
+                content.appendChild(card);
+
+            }
+        );
+
+}
 /* =========================================================
    RENDER EVERYTHING
    ========================================================= */
