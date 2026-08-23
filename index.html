@@ -9,374 +9,499 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:Arial,sans-serif;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-body{
-    background:#0f172a;
-    color:white;
-    min-height:100vh;
+body {
+    background: #0b0f14;
+    color: white;
+    min-height: 100vh;
 }
 
-header{
-    text-align:center;
-    padding:28px 15px;
-    background:#111827;
-    border-bottom:1px solid #334155;
+/* ================= HEADER ================= */
+
+header {
+    height: 70px;
+    background: #111720;
+    border-bottom: 1px solid #202a36;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 25px;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-header h1{
-    font-size:32px;
-    margin-bottom:8px;
+.logo {
+    font-size: 22px;
+    font-weight: bold;
 }
 
-header p{
-    color:#94a3b8;
+.logo span {
+    color: #4ade80;
 }
 
-nav{
-    display:flex;
-    justify-content:center;
-    gap:8px;
-    padding:15px;
-    background:#1e293b;
-    flex-wrap:wrap;
+#userDisplay {
+    color: #aab4c0;
+    font-size: 14px;
 }
 
-nav button{
-    border:none;
-    padding:10px 18px;
-    border-radius:8px;
-    background:#334155;
-    color:white;
-    cursor:pointer;
+/* ================= NAVIGATION ================= */
+
+nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    height: 70px;
+
+    background: #111720;
+    border-top: 1px solid #202a36;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    z-index: 200;
 }
 
-nav button:hover{
-    background:#475569;
+.nav-btn {
+    background: none;
+    border: none;
+    color: #7f8a98;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+
+    min-width: 65px;
 }
 
-nav button.active{
-    background:#22c55e;
-    color:#052e16;
-    font-weight:bold;
+.nav-icon {
+    font-size: 21px;
 }
 
-main{
-    max-width:1100px;
-    margin:auto;
-    padding:20px;
+.nav-btn.active {
+    color: #4ade80;
 }
 
-.card{
-    background:#1e293b;
-    border:1px solid #334155;
-    border-radius:14px;
-    padding:20px;
-    margin-bottom:20px;
+/* ================= MAIN ================= */
+
+main {
+    max-width: 1100px;
+    margin: auto;
+
+    padding: 30px 20px 100px;
 }
 
-.card h2{
-    margin-bottom:15px;
+.page {
+    display: none;
 }
 
-.card h3{
-    margin-bottom:10px;
+.page.active {
+    display: block;
 }
 
-.hidden{
-    display:none!important;
+/* ================= TITLES ================= */
+
+.page-title {
+    font-size: 30px;
+    margin-bottom: 8px;
 }
 
-.message{
-    color:#94a3b8;
-    margin-top:8px;
-    line-height:1.5;
+.page-subtitle {
+    color: #84909d;
+    margin-bottom: 25px;
 }
 
-input{
-    width:100%;
-    padding:12px;
-    margin:6px 0;
-    border-radius:8px;
-    border:1px solid #475569;
-    background:#0f172a;
-    color:white;
-    outline:none;
+/* ================= CARDS ================= */
+
+.grid {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 15px;
+
+    margin-bottom: 25px;
 }
 
-input:focus{
-    border-color:#22c55e;
+.card {
+    background: #111720;
+
+    border: 1px solid #202a36;
+
+    border-radius: 15px;
+
+    padding: 20px;
 }
 
-button.primary{
-    background:#22c55e;
-    color:#052e16;
-    border:none;
-    padding:12px 18px;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-    margin-top:8px;
+.card-title {
+    color: #84909d;
+    font-size: 13px;
+
+    margin-bottom: 10px;
 }
 
-button.primary:hover{
-    background:#4ade80;
+.card-value {
+    font-size: 28px;
+    font-weight: bold;
 }
 
-button.secondary{
-    background:#334155;
-    color:white;
-    border:none;
-    padding:12px 18px;
-    border-radius:8px;
-    cursor:pointer;
-    margin-top:8px;
+.green {
+    color: #4ade80;
 }
 
-button.secondary:hover{
-    background:#475569;
+.blue {
+    color: #60a5fa;
 }
 
-button.danger{
-    background:#ef4444;
-    color:white;
-    border:none;
-    padding:8px 12px;
-    border-radius:7px;
-    cursor:pointer;
+.yellow {
+    color: #facc15;
 }
 
-button.danger:hover{
-    background:#dc2626;
+/* ================= FORMS ================= */
+
+.form-card {
+    background: #111720;
+
+    border: 1px solid #202a36;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+    margin-bottom: 20px;
 }
 
-.form-row{
-    display:grid;
-    grid-template-columns:1fr auto;
-    gap:10px;
-    align-items:center;
+.form-group {
+    margin-bottom: 18px;
 }
 
-.form-row button{
-    margin-top:6px;
+label {
+    display: block;
+
+    color: #aab4c0;
+
+    font-size: 14px;
+
+    margin-bottom: 7px;
 }
 
-.stats{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-    gap:12px;
+input,
+select {
+    width: 100%;
+
+    padding: 13px;
+
+    background: #0b0f14;
+
+    border: 1px solid #2a3543;
+
+    border-radius: 9px;
+
+    color: white;
+
+    outline: none;
+
+    font-size: 15px;
 }
 
-.stat{
-    background:#0f172a;
-    border:1px solid #334155;
-    border-radius:10px;
-    padding:18px;
+input:focus,
+select:focus {
+    border-color: #4ade80;
 }
 
-.stat h3{
-    color:#94a3b8;
-    font-size:14px;
-    margin-bottom:8px;
+/* ================= BUTTONS ================= */
+
+button.primary {
+    width: 100%;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #4ade80;
+
+    color: #06130b;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
 }
 
-.stat strong{
-    font-size:28px;
-    color:#22c55e;
+button.primary:hover {
+    background: #65ed94;
 }
 
-.calendar-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:15px;
-    gap:10px;
+button.secondary {
+    padding: 10px 15px;
+
+    border: 1px solid #2a3543;
+
+    border-radius: 8px;
+
+    background: #171e27;
+
+    color: white;
+
+    cursor: pointer;
 }
 
-.calendar-header button{
-    background:#334155;
-    color:white;
-    border:none;
-    padding:8px 14px;
-    border-radius:7px;
-    cursor:pointer;
+/* ================= PROGRESS ================= */
+
+.progress-container {
+    margin-top: 15px;
 }
 
-.calendar-header button:hover{
-    background:#475569;
+.progress-bar {
+    width: 100%;
+
+    height: 10px;
+
+    background: #252e39;
+
+    border-radius: 20px;
+
+    overflow: hidden;
 }
 
-.calendar{
-    display:grid;
-    grid-template-columns:repeat(7,1fr);
-    gap:6px;
+.progress-fill {
+    height: 100%;
+
+    background: #4ade80;
+
+    width: 0%;
+
+    transition: width 0.5s;
 }
 
-.day-name{
-    text-align:center;
-    color:#94a3b8;
-    padding:8px;
-    font-size:13px;
+/* ================= HISTORY ================= */
+
+.history-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #202a36;
 }
 
-.day{
-    min-height:75px;
-    background:#0f172a;
-    border:1px solid #334155;
-    border-radius:8px;
-    padding:8px;
-    cursor:pointer;
+.history-item:last-child {
+    border-bottom: none;
 }
 
-.day:hover{
-    border-color:#22c55e;
+.history-date {
+    color: #84909d;
+    font-size: 13px;
 }
 
-.day.today{
-    border:2px solid #22c55e;
+.history-value {
+    font-weight: bold;
 }
 
-.day.selected{
-    box-shadow:0 0 0 2px #60a5fa;
+/* ================= FRIENDS ================= */
+
+.friends-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
 }
 
-.day.has-workout{
-    background:#14532d;
+.friend-card {
+    background: #111720;
+
+    border: 1px solid #202a36;
+
+    border-radius: 15px;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 12px;
 }
 
-.day-number{
-    font-weight:bold;
+.friend-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
 }
 
-.day-reps{
-    color:#86efac;
-    font-size:12px;
-    margin-top:8px;
+.avatar {
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    background: #1d2a35;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-weight: bold;
+
+    color: #4ade80;
 }
 
-.exercise-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#0f172a;
-    padding:13px;
-    border-radius:9px;
-    margin-bottom:8px;
-    gap:10px;
+.friend-name {
+    font-weight: bold;
+
+    margin-bottom: 4px;
 }
 
-.success{
-    color:#86efac;
+.friend-stat {
+    color: #84909d;
+
+    font-size: 12px;
 }
 
-.error{
-    color:#fca5a5;
+/* ================= LOGIN ================= */
+
+#loginScreen {
+    position: fixed;
+
+    inset: 0;
+
+    background: #0b0f14;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+    z-index: 1000;
 }
 
-.month-card{
-    margin-bottom:10px;
+.login-box {
+    width: 100%;
+    max-width: 400px;
+
+    background: #111720;
+
+    border: 1px solid #202a36;
+
+    border-radius: 18px;
+
+    padding: 30px;
 }
 
-.friend-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    background:#0f172a;
-    padding:14px;
-    border-radius:10px;
-    margin-bottom:8px;
+.login-box h1 {
+    margin-bottom: 8px;
 }
 
-.friend-actions{
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
+.login-box p {
+    color: #84909d;
+
+    margin-bottom: 25px;
 }
 
-.progress-row{
-    background:#0f172a;
-    padding:16px;
-    border-radius:10px;
-    margin-bottom:12px;
+.login-switch {
+    text-align: center;
+
+    margin-top: 18px;
+
+    color: #84909d;
+
+    font-size: 13px;
+
+    cursor: pointer;
 }
 
-.progress-head{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:8px;
+.login-switch span {
+    color: #4ade80;
 }
 
-.progress-head span:last-child{
-    color:#86efac;
+/* ================= TOAST ================= */
+
+#toast {
+    position: fixed;
+
+    bottom: 90px;
+
+    left: 50%;
+
+    transform: translateX(-50%) translateY(20px);
+
+    background: #17202a;
+
+    border: 1px solid #2a3543;
+
+    padding: 13px 20px;
+
+    border-radius: 10px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: 0.3s;
+
+    z-index: 2000;
 }
 
-.bar{
-    width:100%;
-    height:14px;
-    background:#334155;
-    border-radius:20px;
-    overflow:hidden;
+#toast.show {
+    opacity: 1;
+
+    transform: translateX(-50%) translateY(0);
 }
 
-.fill{
-    height:100%;
-    background:#22c55e;
-    transition:width .4s;
-}
+/* ================= MOBILE ================= */
 
-.mini{
-    color:#94a3b8;
-    font-size:13px;
-    margin-top:7px;
-}
+@media (max-width: 600px) {
 
-.loading{
-    text-align:center;
-    padding:15px;
-    color:#94a3b8;
-}
-
-@media(max-width:600px){
-
-    main{
-        padding:12px;
+    header {
+        padding: 0 15px;
     }
 
-    header h1{
-        font-size:25px;
+    .page-title {
+        font-size: 25px;
     }
 
-    .form-row{
-        grid-template-columns:1fr;
+    main {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 
-    .calendar{
-        gap:3px;
-    }
-
-    .day{
-        min-height:60px;
-        padding:5px;
-    }
-
-    .day-reps{
-        font-size:10px;
-    }
-
-    .friend-row{
-        align-items:flex-start;
-        flex-direction:column;
-    }
-
-    .calendar-header h2{
-        font-size:18px;
+    .card-value {
+        font-size: 24px;
     }
 }
 </style>
@@ -384,1072 +509,754 @@ button.danger:hover{
 
 <body>
 
+<!-- ================= LOGIN ================= -->
+
+<div id="loginScreen">
+
+    <div class="login-box">
+
+        <h1>Fitness <span class="green">Progress</span></h1>
+
+        <p id="loginDescription">
+            Login to track your progress.
+        </p>
+
+        <div class="form-group">
+
+            <label>Email</label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="you@example.com"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Password</label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+            >
+
+        </div>
+
+        <button
+            class="primary"
+            id="authButton"
+            onclick="handleAuth()"
+        >
+            Login
+        </button>
+
+        <div
+            class="login-switch"
+            onclick="toggleAuthMode()"
+            id="authSwitch"
+        >
+            Don't have an account?
+            <span>Sign up</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= HEADER ================= -->
+
 <header>
-    <h1>💪 Fitness Progress</h1>
-    <p>Track your workouts. Watch yourself improve.</p>
+
+    <div class="logo">
+        Fitness <span>Progress</span>
+    </div>
+
+    <div id="userDisplay">
+        Not logged in
+    </div>
+
 </header>
 
 
-<!-- =====================================================
-     AUTH
-===================================================== -->
+<!-- ================= MAIN ================= -->
 
-<section
-    id="authSection"
-    class="card"
-    style="max-width:700px;margin:25px auto;"
->
+<main>
 
-    <h2>🔐 Your Account</h2>
+    <!-- ================= HOME ================= -->
 
-    <p class="message">
-        Create an account to save your workouts in the cloud and access them anywhere.
-    </p>
-
-    <input
-        id="username"
-        type="text"
-        placeholder="Username e.g. amit3102"
-        maxlength="20"
+    <section
+        id="homePage"
+        class="page active"
     >
 
-    <input
-        id="email"
-        type="email"
-        placeholder="Email"
+        <h1 class="page-title">
+            Dashboard
+        </h1>
+
+        <p class="page-subtitle">
+            Keep pushing. Keep improving.
+        </p>
+
+
+        <div class="grid">
+
+            <div class="card">
+
+                <div class="card-title">
+                    Current Weight
+                </div>
+
+                <div
+                    class="card-value green"
+                    id="dashboardWeight"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Starting Weight
+                </div>
+
+                <div
+                    class="card-value"
+                    id="dashboardStartingWeight"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Weight Change
+                </div>
+
+                <div
+                    class="card-value blue"
+                    id="dashboardChange"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Entries
+                </div>
+
+                <div
+                    class="card-value yellow"
+                    id="dashboardEntries"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-card">
+
+            <h2>Latest Update</h2>
+
+            <br>
+
+            <div id="latestUpdate">
+                No fitness data recorded yet.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= INPUT ================= -->
+
+    <section
+        id="inputPage"
+        class="page"
     >
 
-    <input
-        id="password"
-        type="password"
-        placeholder="Password (minimum 6 characters)"
+        <h1 class="page-title">
+            Input Tracker
+        </h1>
+
+        <p class="page-subtitle">
+            Record today's fitness data.
+        </p>
+
+
+        <div class="form-card">
+
+            <div class="form-group">
+
+                <label>
+                    Weight (kg)
+                </label>
+
+                <input
+                    type="number"
+                    id="weightInput"
+                    step="0.1"
+                    placeholder="e.g. 65.5"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Height (cm)
+                </label>
+
+                <input
+                    type="number"
+                    id="heightInput"
+                    step="0.1"
+                    placeholder="e.g. 175"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Workout minutes
+                </label>
+
+                <input
+                    type="number"
+                    id="workoutInput"
+                    placeholder="e.g. 45"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Steps
+                </label>
+
+                <input
+                    type="number"
+                    id="stepsInput"
+                    placeholder="e.g. 8000"
+                >
+
+            </div>
+
+
+            <button
+                class="primary"
+                onclick="saveFitnessData()"
+            >
+                Save Today's Data
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= PROGRESS ================= -->
+
+    <section
+        id="progressPage"
+        class="page"
     >
 
-    <button
-        class="primary"
-        onclick="createAccount()"
+        <h1 class="page-title">
+            Progress
+        </h1>
+
+        <p class="page-subtitle">
+            See how far you've come.
+        </p>
+
+
+        <div class="grid">
+
+            <div class="card">
+
+                <div class="card-title">
+                    Starting Weight
+                </div>
+
+                <div
+                    class="card-value"
+                    id="progressStart"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Current Weight
+                </div>
+
+                <div
+                    class="card-value green"
+                    id="progressCurrent"
+                >
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    Total Change
+                </div>
+
+                <div
+                    class="card-value blue"
+                    id="progressDifference"
+                >
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-card">
+
+            <h2>Weight History</h2>
+
+            <br>
+
+            <div id="history">
+                Loading...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FRIENDS ================= -->
+
+    <section
+        id="friendsPage"
+        class="page"
     >
-        Create Account
-    </button>
 
-    <button
-        class="secondary"
-        onclick="login()"
-    >
-        Log In
-    </button>
+        <div class="friends-header">
 
-    <p id="authMessage" class="message"></p>
+            <div>
 
-</section>
+                <h1 class="page-title">
+                    Friends
+                </h1>
 
+                <p class="page-subtitle">
+                    Compare progress with your friends.
+                </p>
 
-<!-- =====================================================
-     ACCOUNT
-===================================================== -->
+            </div>
 
-<section
-    id="accountSection"
-    class="card hidden"
-    style="max-width:1100px;margin:25px auto;"
->
-
-    <h2>👤 Account</h2>
-
-    <p id="accountEmail" class="message"></p>
-
-    <button
-        class="secondary"
-        onclick="logout()"
-    >
-        Log Out
-    </button>
-
-</section>
+        </div>
 
 
-<!-- =====================================================
-     APPLICATION
-===================================================== -->
+        <div class="form-card">
 
-<div id="app" class="hidden">
+            <h2>Add Friend</h2>
+
+            <br>
+
+            <div class="form-group">
+
+                <label>
+                    Friend's email
+                </label>
+
+                <input
+                    type="email"
+                    id="friendEmail"
+                    placeholder="friend@example.com"
+                >
+
+            </div>
+
+            <button
+                class="primary"
+                onclick="addFriend()"
+            >
+                Add Friend
+            </button>
+
+        </div>
+
+
+        <div id="friendsList">
+
+            <div class="form-card">
+
+                <p style="color:#84909d;">
+                    No friends added yet.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================= NAVIGATION ================= -->
 
 <nav>
 
     <button
-        class="active"
-        onclick="showPage('week',this)"
+        class="nav-btn active"
+        onclick="showPage('homePage', this)"
     >
-        Week
+        <span class="nav-icon">⌂</span>
+        Home
     </button>
 
-    <button
-        onclick="showPage('month',this)"
-    >
-        Month
-    </button>
 
     <button
-        onclick="showPage('year',this)"
+        class="nav-btn"
+        onclick="showPage('inputPage', this)"
     >
-        Year
+        <span class="nav-icon">＋</span>
+        Input
     </button>
 
+
     <button
-        onclick="showPage('progress',this)"
+        class="nav-btn"
+        onclick="showPage('progressPage', this)"
     >
+        <span class="nav-icon">◈</span>
         Progress
     </button>
 
+
+    <!-- FRIENDS TAB -->
+
     <button
-        onclick="showPage('friends',this)"
+        class="nav-btn"
+        onclick="showPage('friendsPage', this)"
     >
-        Friends 👥
+        <span class="nav-icon">♟</span>
+        Friends
     </button>
 
 </nav>
 
 
-<main>
-
-
-<!-- =====================================================
-     WEEK
-===================================================== -->
-
-<section id="week" class="page">
-
-    <div class="card">
-
-        <h2>📊 This Week</h2>
-
-        <div class="stats">
-
-            <div class="stat">
-                <h3>Total Reps</h3>
-                <strong id="weekTotal">0</strong>
-            </div>
-
-            <div class="stat">
-                <h3>Workout Days</h3>
-                <strong id="workoutDays">0</strong>
-            </div>
-
-            <div class="stat">
-                <h3>Best Day</h3>
-                <strong id="bestDay">0</strong>
-            </div>
-
-            <div class="stat">
-                <h3>Exercises</h3>
-                <strong id="exerciseCount">0</strong>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="calendar-header">
-
-            <button onclick="previousWeek()">←</button>
-
-            <h2 id="weekTitle"></h2>
-
-            <button onclick="nextWeek()">→</button>
-
-        </div>
-
-        <div
-            class="calendar"
-            id="weekCalendar"
-        ></div>
-
-    </div>
-
-
-    <div class="card">
-
-        <h2>➕ Add Workout</h2>
-
-        <p
-            id="selectedDate"
-            class="message"
-        ></p>
-
-        <input
-            id="exerciseName"
-            placeholder="Exercise e.g. Push-ups"
-        >
-
-        <input
-            id="reps"
-            type="number"
-            min="0"
-            placeholder="Number of reps"
-        >
-
-        <button
-            class="primary"
-            onclick="addWorkout()"
-        >
-            Save Workout
-        </button>
-
-    </div>
-
-
-    <div class="card">
-
-        <h2>🏋️ Selected Day</h2>
-
-        <div id="dayWorkouts">
-
-            <p class="message">
-                Select a day to see your workouts.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     MONTH
-===================================================== -->
-
-<section
-    id="month"
-    class="page hidden"
->
-
-    <div class="card">
-
-        <div class="calendar-header">
-
-            <button onclick="previousMonth()">←</button>
-
-            <h2 id="monthTitle"></h2>
-
-            <button onclick="nextMonth()">→</button>
-
-        </div>
-
-        <div
-            class="calendar"
-            id="monthCalendar"
-        ></div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     YEAR
-===================================================== -->
-
-<section
-    id="year"
-    class="page hidden"
->
-
-    <div class="card">
-
-        <div class="calendar-header">
-
-            <button onclick="previousYear()">←</button>
-
-            <h2 id="yearTitle"></h2>
-
-            <button onclick="nextYear()">→</button>
-
-        </div>
-
-        <div id="yearContent"></div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     PROGRESS
-===================================================== -->
-
-<section
-    id="progress"
-    class="page hidden"
->
-
-    <div class="card">
-
-        <h2>📈 Your Progress</h2>
-
-        <p class="message">
-            See how your rep counts have changed over time.
-        </p>
-
-        <div id="progressContent"></div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     FRIENDS
-===================================================== -->
-
-<section
-    id="friends"
-    class="page hidden"
->
-
-    <div class="card">
-
-        <h2>👥 Friends</h2>
-
-        <p class="message">
-            Find your friends by username and see their shared workout progress.
-        </p>
-
-        <h3 style="margin-top:20px;">
-            🔎 Find a Friend
-        </h3>
-
-        <div class="form-row">
-
-            <input
-                id="friendUsername"
-                placeholder="Enter username"
-            >
-
-            <button
-                class="primary"
-                onclick="searchFriend()"
-            >
-                Search
-            </button>
-
-        </div>
-
-        <div id="friendSearchResult"></div>
-
-    </div>
-
-
-    <div class="card">
-
-        <h2>📨 Friend Requests</h2>
-
-        <div id="friendRequests">
-
-            <p class="message">
-                Loading...
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <h2>🤝 My Friends</h2>
-
-        <div id="friendsList">
-
-            <p class="message">
-                Loading...
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <h2>🔒 Workout Sharing</h2>
-
-        <p
-            id="sharingStatus"
-            class="message"
-        >
-            Loading...
-        </p>
-
-        <button
-            id="sharingButton"
-            class="secondary"
-            onclick="toggleSharing()"
-        >
-            Loading...
-        </button>
-
-    </div>
-
-
-    <div
-        id="friendProgress"
-        class="card hidden"
-    >
-
-        <h2 id="friendProgressTitle">
-            📊 Friend Progress
-        </h2>
-
-        <div id="friendProgressContent"></div>
-
-    </div>
-
-</section>
-
-
-</main>
-
-</div>
+<div id="toast"></div>
 
 
 <script>
 
-/* =====================================================
+/* =========================================================
    SUPABASE CONFIG
-===================================================== */
+   ========================================================= */
 
-const SUPABASE_URL =
-"https://krpucrldzygggvrasotg.supabase.co";
+const SUPABASE_URL = "https://krpucrldzygggvrasotg.supabase.co";
 
-const SUPABASE_KEY =
+const SUPABASE_ANON_KEY =
 "sb_publishable_xTCwE_kSHd6bgaA_hCsSgg_9BUEYgQz";
 
 
 const supabaseClient =
-window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-/* =====================================================
-   APP STATE
-===================================================== */
-
-let workouts = {};
-
-let selectedDate = new Date();
-
-let calendarDate = new Date();
-
-
-/* =====================================================
-   HELPERS
-===================================================== */
-
-function dateKey(date){
-
-    const y =
-        date.getFullYear();
-
-    const m =
-        String(
-            date.getMonth()+1
-        ).padStart(2,"0");
-
-    const d =
-        String(
-            date.getDate()
-        ).padStart(2,"0");
-
-    return `${y}-${m}-${d}`;
-}
-
-
-function escapeHTML(value){
-
-    return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
-
-
-function escapeJS(value){
-
-    return String(value)
-        .replaceAll("\\","\\\\")
-        .replaceAll("'","\\'")
-        .replaceAll('"','\\"')
-        .replaceAll("\n","\\n")
-        .replaceAll("\r","\\r");
-}
-
-
-function startOfWeek(date){
-
-    const d =
-        new Date(date);
-
-    const day =
-        d.getDay();
-
-    const difference =
-        day === 0
-        ? -6
-        : 1-day;
-
-    d.setDate(
-        d.getDate()+difference
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
     );
 
-    d.setHours(0,0,0,0);
 
-    return d;
-}
+/* =========================================================
+   AUTH MODE
+   ========================================================= */
 
-
-/* =====================================================
-   AUTH MESSAGE
-===================================================== */
-
-function setAuthMessage(
-    message,
-    error=false
-){
-
-    const element =
-        document.getElementById(
-            "authMessage"
-        );
-
-    element.textContent =
-        message;
-
-    element.className =
-        error
-        ? "message error"
-        : "message success";
-}
+let isLoginMode = true;
 
 
-/* =====================================================
-   GET CURRENT USER
-===================================================== */
+/* =========================================================
+   AUTH
+   ========================================================= */
 
-async function getCurrentUser(){
-
-    const {
-        data:{
-            user
-        }
-    } =
-    await supabaseClient
-    .auth
-    .getUser();
-
-    return user;
-}
-
-
-/* =====================================================
-   CREATE ACCOUNT
-===================================================== */
-
-async function createAccount(){
+async function handleAuth() {
 
     const email =
-        document
-        .getElementById("email")
-        .value
-        .trim();
+        document.getElementById("email").value.trim();
 
     const password =
-        document
-        .getElementById("password")
-        .value;
-
-    const username =
-        document
-        .getElementById("username")
-        .value
-        .trim()
-        .toLowerCase();
+        document.getElementById("password").value;
 
 
-    if(!username){
+    if (!email || !password) {
 
-        setAuthMessage(
-            "Please choose a username.",
-            true
-        );
+        showToast("Enter your email and password.");
 
         return;
     }
 
 
-    if(!/^[a-z0-9_]{3,20}$/.test(username)){
+    try {
 
-        setAuthMessage(
-            "Username must be 3–20 characters and contain only letters, numbers, or underscores.",
-            true
-        );
+        if (isLoginMode) {
 
-        return;
-    }
-
-
-    if(!email){
-
-        setAuthMessage(
-            "Enter your email.",
-            true
-        );
-
-        return;
-    }
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
 
 
-    if(password.length < 6){
-
-        setAuthMessage(
-            "Password must be at least 6 characters.",
-            true
-        );
-
-        return;
-    }
+            if (error)
+                throw error;
 
 
-    setAuthMessage(
-        "Checking username..."
-    );
+            showToast("Logged in!");
+
+        } else {
+
+            const { data, error } =
+                await supabaseClient.auth.signUp({
+                    email,
+                    password
+                });
 
 
-    const {
-        data:existingUsername,
-        error:usernameError
-    } =
-    await supabaseClient
-    .from("profiles")
-    .select("id")
-    .eq("username",username)
-    .maybeSingle();
+            if (error)
+                throw error;
 
 
-    if(usernameError){
-
-        setAuthMessage(
-            usernameError.message,
-            true
-        );
-
-        return;
-    }
-
-
-    if(existingUsername){
-
-        setAuthMessage(
-            "That username is already taken.",
-            true
-        );
-
-        return;
-    }
-
-
-    setAuthMessage(
-        "Creating your account..."
-    );
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient.auth.signUp({
-
-        email,
-        password,
-
-        options:{
-            data:{
-                username:username
-            }
+            showToast(
+                "Account created! Check your email if confirmation is enabled."
+            );
         }
 
-    });
-
-
-    if(error){
-
-        setAuthMessage(
-            error.message,
-            true
-        );
-
-        return;
     }
 
-
-    if(!data.user){
-
-        setAuthMessage(
-            "Account creation failed.",
-            true
-        );
-
-        return;
-    }
-
-
-    /*
-       If email confirmation is disabled,
-       a session will already exist.
-
-       If email confirmation is enabled,
-       the profile is still created below.
-    */
-
-    const {
-        error:profileError
-    } =
-    await supabaseClient
-    .from("profiles")
-    .upsert(
-        {
-            id:data.user.id,
-            username:username,
-            display_name:username
-        },
-        {
-            onConflict:"id"
-        }
-    );
-
-
-    if(profileError){
-
-        console.error(
-            "Profile error:",
-            profileError
-        );
-
-        setAuthMessage(
-            "Account created, but profile creation failed: "+
-            profileError.message,
-            true
-        );
-
-        return;
-    }
-
-
-    /*
-       Create default sharing settings.
-    */
-
-    const {
-        error:sharingError
-    } =
-    await supabaseClient
-    .from("sharing_settings")
-    .upsert(
-        {
-            user_id:data.user.id,
-            share_workouts:false
-        },
-        {
-            onConflict:"user_id"
-        }
-    );
-
-
-    if(sharingError){
-
-        console.warn(
-            "Sharing settings could not be created:",
-            sharingError.message
-        );
-
-    }
-
-
-    if(data.session){
-
-        setAuthMessage(
-            "Account created successfully!"
-        );
-
-        await initializeApp();
-
-    }
-    else{
-
-        setAuthMessage(
-            "Account created! Check your email to confirm your account."
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   LOGIN
-===================================================== */
-
-async function login(){
-
-    const email =
-        document
-        .getElementById("email")
-        .value
-        .trim();
-
-    const password =
-        document
-        .getElementById("password")
-        .value;
-
-
-    if(!email || !password){
-
-        setAuthMessage(
-            "Enter your email and password.",
-            true
-        );
-
-        return;
-    }
-
-
-    setAuthMessage(
-        "Logging in..."
-    );
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .auth
-    .signInWithPassword({
-
-        email,
-        password
-
-    });
-
-
-    if(error){
-
-        setAuthMessage(
-            error.message,
-            true
-        );
-
-        return;
-    }
-
-
-    if(data.session){
-
-        await initializeApp();
-
-    }
-
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-async function logout(){
-
-    await supabaseClient
-        .auth
-        .signOut();
-
-    workouts = {};
-
-    document
-        .getElementById("app")
-        .classList.add("hidden");
-
-    document
-        .getElementById("accountSection")
-        .classList.add("hidden");
-
-    document
-        .getElementById("authSection")
-        .classList.remove("hidden");
-
-}
-
-
-/* =====================================================
-   LOAD WORKOUTS
-===================================================== */
-
-async function loadWorkouts(){
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .from("workouts")
-    .select(
-        "workout_date,exercise_name,reps"
-    )
-    .eq(
-        "user_id",
-        user.id
-    )
-    .order(
-        "workout_date",
-        {
-            ascending:true
-        }
-    );
-
-
-    if(error){
+    catch (error) {
 
         console.error(error);
 
-        alert(
-            "Could not load workouts:\n"+
-            error.message
-        );
+        showToast(error.message);
 
-        return;
     }
-
-
-    workouts = {};
-
-
-    data.forEach(row=>{
-
-        if(!workouts[row.workout_date])
-            workouts[row.workout_date]={};
-
-        workouts[
-            row.workout_date
-        ][row.exercise_name] =
-            Number(row.reps);
-
-    });
 
 }
 
 
-/* =====================================================
-   ADD WORKOUT
-===================================================== */
+/* =========================================================
+   TOGGLE LOGIN / SIGNUP
+   ========================================================= */
 
-async function addWorkout(){
+function toggleAuthMode() {
 
-    const name =
-        document
-        .getElementById("exerciseName")
-        .value
-        .trim();
+    isLoginMode = !isLoginMode;
 
-    const reps =
-        Number(
+
+    document.getElementById("authButton").textContent =
+        isLoginMode ? "Login" : "Sign Up";
+
+
+    document.getElementById("loginDescription").textContent =
+        isLoginMode
+            ? "Login to track your progress."
+            : "Create an account to start tracking.";
+
+
+    document.getElementById("authSwitch").innerHTML =
+        isLoginMode
+            ? `Don't have an account? <span>Sign up</span>`
+            : `Already have an account? <span>Login</span>`;
+}
+
+
+/* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+        if (session) {
+
             document
-            .getElementById("reps")
-            .value
-        );
+                .getElementById("loginScreen")
+                .style.display = "none";
 
 
-    if(!name){
+            document
+                .getElementById("userDisplay")
+                .textContent =
+                session.user.email;
 
-        alert(
-            "Enter an exercise."
-        );
 
-        return;
+            await loadEverything();
+
+        } else {
+
+            document
+                .getElementById("loginScreen")
+                .style.display = "flex";
+
+
+            document
+                .getElementById("userDisplay")
+                .textContent =
+                "Not logged in";
+        }
+
+    }
+);
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+function showPage(pageId, button) {
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page => {
+
+            page.classList.remove("active");
+
+        });
+
+
+    document
+        .getElementById(pageId)
+        .classList.add("active");
+
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+    button.classList.add("active");
+
+
+    if (pageId === "friendsPage") {
+
+        loadFriends();
+
     }
 
-
-    if(
-        !Number.isFinite(reps) ||
-        reps < 0
-    ){
-
-        alert(
-            "Enter a valid number of reps."
-        );
-
-        return;
-    }
+}
 
 
-    const user =
-        await getCurrentUser();
+/* =========================================================
+   SAVE FITNESS DATA
+   ========================================================= */
 
-
-    if(!user){
-
-        alert(
-            "Please log in first."
-        );
-
-        return;
-    }
-
-
-    const key =
-        dateKey(selectedDate);
-
-    const cleanReps =
-        Math.round(reps);
-
+async function saveFitnessData() {
 
     const {
-        error
-    } =
-    await supabaseClient
-    .from("workouts")
-    .upsert(
-        {
-            user_id:user.id,
-            workout_date:key,
-            exercise_name:name,
-            reps:cleanReps
-        },
-        {
-            onConflict:
-            "user_id,workout_date,exercise_name"
-        }
-    );
+        data: { user }
+    } = await supabaseClient.auth.getUser();
 
 
-    if(error){
+    if (!user) {
 
-        alert(
-            "Could not save workout:\n"+
+        showToast("Please login first.");
+
+        return;
+    }
+
+
+    const weight =
+        parseFloat(
+            document.getElementById("weightInput").value
+        );
+
+
+    const height =
+        parseFloat(
+            document.getElementById("heightInput").value
+        );
+
+
+    const workout =
+        parseInt(
+            document.getElementById("workoutInput").value
+        ) || 0;
+
+
+    const steps =
+        parseInt(
+            document.getElementById("stepsInput").value
+        ) || 0;
+
+
+    if (!weight) {
+
+        showToast("Enter your weight.");
+
+        return;
+    }
+
+
+    const { error } =
+        await supabaseClient
+            .from("fitness_data")
+            .insert({
+
+                user_id: user.id,
+
+                weight: weight,
+
+                height: height || null,
+
+                workout_minutes: workout,
+
+                steps: steps,
+
+                created_at:
+                    new Date().toISOString()
+
+            });
+
+
+    if (error) {
+
+        console.error(error);
+
+        showToast(
+            "Could not save data: " +
             error.message
         );
 
@@ -1457,1923 +1264,361 @@ async function addWorkout(){
     }
 
 
-    if(!workouts[key])
-        workouts[key]={};
-
-    workouts[key][name] =
-        cleanReps;
+    showToast("Fitness data saved! 🔥");
 
 
     document
-        .getElementById("exerciseName")
-        .value="";
+        .getElementById("weightInput")
+        .value = "";
 
     document
-        .getElementById("reps")
-        .value="";
+        .getElementById("heightInput")
+        .value = "";
+
+    document
+        .getElementById("workoutInput")
+        .value = "";
+
+    document
+        .getElementById("stepsInput")
+        .value = "";
 
 
-    renderAll();
+    await loadEverything();
+}
+
+
+/* =========================================================
+   LOAD ALL DATA
+   ========================================================= */
+
+async function loadEverything() {
+
+    await loadProgress();
+
+    await loadFriends();
 
 }
 
 
-/* =====================================================
-   DELETE WORKOUT
-===================================================== */
+/* =========================================================
+   LOAD PROGRESS
+   ========================================================= */
 
-async function deleteWorkout(
-    exercise
-){
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    const key =
-        dateKey(selectedDate);
-
+async function loadProgress() {
 
     const {
-        error
-    } =
-    await supabaseClient
-    .from("workouts")
-    .delete()
-    .eq(
-        "user_id",
-        user.id
-    )
-    .eq(
-        "workout_date",
-        key
-    )
-    .eq(
-        "exercise_name",
-        exercise
-    );
+        data: { user }
+    } = await supabaseClient.auth.getUser();
 
 
-    if(error){
+    if (!user)
+        return;
 
-        alert(
-            "Could not delete workout:\n"+
-            error.message
-        );
+
+    const { data, error } =
+        await supabaseClient
+            .from("fitness_data")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", {
+                ascending: true
+            });
+
+
+    if (error) {
+
+        console.error(error);
 
         return;
     }
 
 
-    if(workouts[key]){
+    if (!data || data.length === 0) {
 
-        delete workouts[key][exercise];
-
-        if(
-            Object.keys(
-                workouts[key]
-            ).length===0
-        ){
-
-            delete workouts[key];
-
-        }
-
-    }
-
-
-    renderAll();
-
-}
-
-
-/* =====================================================
-   WEEK
-===================================================== */
-
-function renderWeek(){
-
-    const start =
-        startOfWeek(calendarDate);
-
-    const end =
-        new Date(start);
-
-    end.setDate(
-        end.getDate()+6
-    );
-
-
-    document
-        .getElementById("weekTitle")
-        .textContent =
-        start.toLocaleDateString(
-            "en-US",
-            {
-                month:"short",
-                day:"numeric"
-            }
-        )
-        +" – "+
-        end.toLocaleDateString(
-            "en-US",
-            {
-                month:"short",
-                day:"numeric"
-            }
-        );
-
-
-    const calendar =
-        document
-        .getElementById(
-            "weekCalendar"
-        );
-
-
-    calendar.innerHTML="";
-
-
-    [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-    ].forEach(day=>{
-
-        const div =
-            document.createElement(
-                "div"
-            );
-
-        div.className =
-            "day-name";
-
-        div.textContent =
-            day;
-
-        calendar.appendChild(div);
-
-    });
-
-
-    let total=0;
-
-    let workoutDays=0;
-
-    let bestDay=0;
-
-    const exercises =
-        new Set();
-
-
-    for(
-        let i=0;
-        i<7;
-        i++
-    ){
-
-        const date =
-            new Date(start);
-
-        date.setDate(
-            start.getDate()+i
-        );
-
-
-        const key =
-            dateKey(date);
-
-        const dayData =
-            workouts[key] || {};
-
-
-        const reps =
-            Object.values(dayData)
-            .reduce(
-                (sum,value)=>
-                    sum+Number(value),
-                0
-            );
-
-
-        total += reps;
-
-        if(reps>0)
-            workoutDays++;
-
-
-        bestDay =
-            Math.max(
-                bestDay,
-                reps
-            );
-
-
-        Object.keys(dayData)
-        .forEach(
-            e=>exercises.add(e)
-        );
-
-
-        const div =
-            document.createElement(
-                "div"
-            );
-
-        div.className =
-            "day";
-
-
-        if(reps>0)
-            div.classList.add(
-                "has-workout"
-            );
-
-
-        if(
-            key===dateKey(
-                new Date()
-            )
-        ){
-
-            div.classList.add(
-                "today"
-            );
-
-        }
-
-
-        if(
-            key===dateKey(
-                selectedDate
-            )
-        ){
-
-            div.classList.add(
-                "selected"
-            );
-
-        }
-
-
-        div.innerHTML=`
-
-            <div class="day-number">
-                ${date.getDate()}
-            </div>
-
-            ${
-                reps>0
-                ?
-                `<div class="day-reps">
-                    ${reps} reps
-                </div>`
-                :
-                ""
-            }
-
-        `;
-
-
-        div.onclick=()=>{
-
-            selectedDate =
-                new Date(date);
-
-            showSelectedDay();
-
-            renderWeek();
-
-        };
-
-
-        calendar.appendChild(div);
-
-    }
-
-
-    document
-        .getElementById("weekTotal")
-        .textContent =
-        total;
-
-    document
-        .getElementById("workoutDays")
-        .textContent =
-        workoutDays;
-
-    document
-        .getElementById("bestDay")
-        .textContent =
-        bestDay;
-
-    document
-        .getElementById("exerciseCount")
-        .textContent =
-        exercises.size;
-
-}
-
-
-/* =====================================================
-   SELECTED DAY
-===================================================== */
-
-function showSelectedDay(){
-
-    const key =
-        dateKey(selectedDate);
-
-    const dayData =
-        workouts[key] || {};
-
-
-    document
-        .getElementById("selectedDate")
-        .textContent =
-        selectedDate.toLocaleDateString(
-            "en-US",
-            {
-                weekday:"long",
-                month:"long",
-                day:"numeric",
-                year:"numeric"
-            }
-        );
-
-
-    const container =
-        document
-        .getElementById(
-            "dayWorkouts"
-        );
-
-
-    container.innerHTML="";
-
-
-    if(
-        Object.keys(dayData)
-        .length===0
-    ){
-
-        container.innerHTML=
-        `<p class="message">
-            No workouts recorded for this day.
-        </p>`;
+        resetProgressDisplay();
 
         return;
     }
-
-
-    Object.entries(dayData)
-    .forEach(
-        ([exercise,reps])=>{
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-            row.className =
-                "exercise-row";
-
-
-            const text =
-                document.createElement(
-                    "span"
-                );
-
-
-            text.innerHTML=`
-                <b>
-                    ${escapeHTML(exercise)}
-                </b>
-
-                <br>
-
-                ${Number(reps)} reps
-            `;
-
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-            button.className =
-                "danger";
-
-            button.textContent =
-                "Delete";
-
-
-            button.onclick=()=>{
-
-                deleteWorkout(
-                    exercise
-                );
-
-            };
-
-
-            row.appendChild(text);
-
-            row.appendChild(button);
-
-            container.appendChild(row);
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   WEEK NAVIGATION
-===================================================== */
-
-function previousWeek(){
-
-    calendarDate.setDate(
-        calendarDate.getDate()-7
-    );
-
-    renderWeek();
-
-}
-
-
-function nextWeek(){
-
-    calendarDate.setDate(
-        calendarDate.getDate()+7
-    );
-
-    renderWeek();
-
-}
-
-
-/* =====================================================
-   MONTH
-===================================================== */
-
-function renderMonth(){
-
-    const year =
-        calendarDate.getFullYear();
-
-    const month =
-        calendarDate.getMonth();
-
-
-    document
-        .getElementById("monthTitle")
-        .textContent =
-        new Date(
-            year,
-            month,
-            1
-        ).toLocaleDateString(
-            "en-US",
-            {
-                month:"long",
-                year:"numeric"
-            }
-        );
-
-
-    const calendar =
-        document
-        .getElementById(
-            "monthCalendar"
-        );
-
-
-    calendar.innerHTML="";
-
-
-    [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-    ].forEach(day=>{
-
-        const div =
-            document.createElement(
-                "div"
-            );
-
-        div.className =
-            "day-name";
-
-        div.textContent =
-            day;
-
-        calendar.appendChild(div);
-
-    });
 
 
     const first =
-        new Date(
-            year,
-            month,
-            1
-        );
+        data[0];
 
 
-    let startDay =
-        first.getDay();
-
-    startDay =
-        startDay===0
-        ?6
-        :startDay-1;
+    const latest =
+        data[data.length - 1];
 
 
-    for(
-        let i=0;
-        i<startDay;
-        i++
-    ){
-
-        calendar.appendChild(
-            document.createElement(
-                "div"
-            )
-        );
-
-    }
+    const startWeight =
+        Number(first.weight);
 
 
-    const days =
-        new Date(
-            year,
-            month+1,
-            0
-        ).getDate();
+    const currentWeight =
+        Number(latest.weight);
 
 
-    for(
-        let d=1;
-        d<=days;
-        d++
-    ){
-
-        const date =
-            new Date(
-                year,
-                month,
-                d
-            );
+    const difference =
+        currentWeight - startWeight;
 
 
-        const key =
-            dateKey(date);
-
-        const dayData =
-            workouts[key] || {};
-
-
-        const reps =
-            Object.values(dayData)
-            .reduce(
-                (sum,value)=>
-                    sum+Number(value),
-                0
-            );
+    const differenceText =
+        (difference > 0 ? "+" : "") +
+        difference.toFixed(1) +
+        " kg";
 
 
-        const div =
-            document.createElement(
-                "div"
-            );
+    /* Dashboard */
 
-
-        div.className =
-            "day";
-
-
-        if(reps>0)
-            div.classList.add(
-                "has-workout"
-            );
-
-
-        if(
-            key===dateKey(
-                new Date()
-            )
-        ){
-
-            div.classList.add(
-                "today"
-            );
-
-        }
-
-
-        div.innerHTML=`
-
-            <div class="day-number">
-                ${d}
-            </div>
-
-            ${
-                reps>0
-                ?
-                `<div class="day-reps">
-                    ${reps} reps
-                </div>`
-                :
-                ""
-            }
-
-        `;
-
-
-        div.onclick=()=>{
-
-            selectedDate =
-                new Date(date);
-
-            calendarDate =
-                new Date(date);
-
-            showPageById("week");
-
-            renderAll();
-
-        };
-
-
-        calendar.appendChild(div);
-
-    }
-
-}
-
-
-function previousMonth(){
-
-    calendarDate.setMonth(
-        calendarDate.getMonth()-1
-    );
-
-    renderMonth();
-
-}
-
-
-function nextMonth(){
-
-    calendarDate.setMonth(
-        calendarDate.getMonth()+1
-    );
-
-    renderMonth();
-
-}
-
-
-/* =====================================================
-   YEAR
-===================================================== */
-
-function renderYear(){
-
-    const year =
-        calendarDate.getFullYear();
+    document
+        .getElementById("dashboardWeight")
+        .textContent =
+        currentWeight.toFixed(1) + " kg";
 
 
     document
-        .getElementById("yearTitle")
+        .getElementById("dashboardStartingWeight")
         .textContent =
-        year;
+        startWeight.toFixed(1) + " kg";
 
 
-    const container =
-        document
-        .getElementById(
-            "yearContent"
-        );
+    document
+        .getElementById("dashboardChange")
+        .textContent =
+        differenceText;
 
 
-    container.innerHTML="";
+    document
+        .getElementById("dashboardEntries")
+        .textContent =
+        data.length;
 
 
-    for(
-        let month=0;
-        month<12;
-        month++
-    ){
+    /* Progress */
 
-        let total=0;
-
-        let days=0;
+    document
+        .getElementById("progressStart")
+        .textContent =
+        startWeight.toFixed(1) + " kg";
 
 
-        Object.entries(workouts)
-        .forEach(
-            ([key,exercises])=>{
-
-                const date =
-                    new Date(
-                        key+
-                        "T00:00:00"
-                    );
+    document
+        .getElementById("progressCurrent")
+        .textContent =
+        currentWeight.toFixed(1) + " kg";
 
 
-                if(
-                    date.getFullYear()
-                    ===year
-                    &&
-                    date.getMonth()
-                    ===month
-                ){
-
-                    const reps =
-                        Object.values(
-                            exercises
-                        )
-                        .reduce(
-                            (sum,value)=>
-                                sum+
-                                Number(value),
-                            0
-                        );
+    document
+        .getElementById("progressDifference")
+        .textContent =
+        differenceText;
 
 
-                    total += reps;
+    /* Latest */
 
-                    if(reps>0)
-                        days++;
-
-                }
-
-            }
-        );
+    const date =
+        new Date(latest.created_at);
 
 
-        const div =
-            document.createElement(
-                "div"
-            );
-
-
-        div.className =
-            "stat month-card";
-
-
-        div.innerHTML=`
-
-            <h3>
-                ${
-                    new Date(
-                        year,
-                        month,
-                        1
-                    )
-                    .toLocaleDateString(
-                        "en-US",
-                        {
-                            month:"long"
-                        }
-                    )
-                }
-            </h3>
-
-            <strong>
-                ${total}
-            </strong>
-
-            <p class="message">
-                ${days} workout days
-            </p>
-
+    document
+        .getElementById("latestUpdate")
+        .innerHTML = `
+            <strong>${currentWeight.toFixed(1)} kg</strong>
+            <br>
+            <span style="color:#84909d;">
+                ${date.toLocaleString()}
+            </span>
+            <br><br>
+            Workout:
+            <strong>${latest.workout_minutes || 0}</strong>
+            min
+            <br>
+            Steps:
+            <strong>${latest.steps || 0}</strong>
         `;
 
 
-        container.appendChild(div);
+    /* History */
 
-    }
-
-}
-
-
-function previousYear(){
-
-    calendarDate.setFullYear(
-        calendarDate.getFullYear()-1
-    );
-
-    renderYear();
-
-}
+    const history =
+        document.getElementById("history");
 
 
-function nextYear(){
-
-    calendarDate.setFullYear(
-        calendarDate.getFullYear()+1
-    );
-
-    renderYear();
-
-}
+    history.innerHTML = "";
 
 
-/* =====================================================
-   PROGRESS
-===================================================== */
+    [...data]
+        .reverse()
+        .forEach(item => {
 
-function renderProgress(){
-
-    const container =
-        document
-        .getElementById(
-            "progressContent"
-        );
+            const itemDate =
+                new Date(item.created_at);
 
 
-    container.innerHTML="";
+            const div =
+                document.createElement("div");
 
 
-    const stats={};
+            div.className =
+                "history-item";
 
 
-    Object.entries(workouts)
-    .forEach(
-        ([date,day])=>{
+            div.innerHTML = `
 
-            Object.entries(day)
-            .forEach(
-                ([exercise,reps])=>{
+                <div>
 
-                    if(!stats[exercise])
-                        stats[exercise]=[];
+                    <div class="history-value">
+                        ${Number(item.weight).toFixed(1)} kg
+                    </div>
 
-                    stats[exercise].push({
+                    <div class="history-date">
+                        ${itemDate.toLocaleDateString()}
+                    </div>
 
-                        date:date,
+                </div>
 
-                        reps:Number(reps)
+                <div style="text-align:right;">
 
-                    });
+                    <div>
+                        ${item.workout_minutes || 0} min
+                    </div>
 
-                }
-            );
-
-        }
-    );
-
-
-    if(
-        Object.keys(stats)
-        .length===0
-    ){
-
-        container.innerHTML=
-        `<p class="message">
-            Start recording workouts to see your progress.
-        </p>`;
-
-        return;
-    }
-
-
-    Object.entries(stats)
-    .forEach(
-        ([exercise,entries])=>{
-
-            entries.sort(
-                (a,b)=>
-                    a.date.localeCompare(
-                        b.date
-                    )
-            );
-
-
-            const values =
-                entries.map(
-                    x=>x.reps
-                );
-
-
-            const first =
-                values[0];
-
-            const latest =
-                values[
-                    values.length-1
-                ];
-
-
-            const increase =
-                first>0
-                ?
-                (
-                    (latest-first)
-                    /first
-                )*100
-                :
-                0;
-
-
-            const barWidth =
-                Math.min(
-                    100,
-                    Math.max(
-                        0,
-                        increase
-                    )
-                );
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "card";
-
-
-            card.innerHTML=`
-
-                <h3>
-                    ${escapeHTML(exercise)}
-                </h3>
-
-                <p class="message">
-                    Starting:
-                    <b>${first}</b> reps
-                </p>
-
-                <p class="message">
-                    Latest:
-                    <b>${latest}</b> reps
-                </p>
-
-                <p class="message">
-                    Change:
-                    <b class="${
-                        increase>=0
-                        ?"success"
-                        :"error"
-                    }">
-                        ${
-                            increase>=0
-                            ?"+"
-                            :""
-                        }${increase.toFixed(1)}%
-                    </b>
-                </p>
-
-                <div class="bar" style="margin-top:10px;">
-
-                    <div
-                        class="fill"
-                        style="
-                            width:${barWidth}%;
-                        "
-                    ></div>
+                    <div class="history-date">
+                        ${item.steps || 0} steps
+                    </div>
 
                 </div>
 
             `;
 
 
-            container.appendChild(card);
+            history.appendChild(div);
 
-        }
-    );
+        });
 
 }
 
 
-/* =====================================================
-   FRIEND SEARCH
-===================================================== */
-
-async function searchFriend(){
-
-    const username =
-        document
-        .getElementById(
-            "friendUsername"
-        )
-        .value
-        .trim()
-        .toLowerCase();
-
-
-    const result =
-        document
-        .getElementById(
-            "friendSearchResult"
-        );
-
-
-    if(!username){
-
-        result.innerHTML=
-        `<p class="message">
-            Enter a username.
-        </p>`;
-
-        return;
-    }
-
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user){
-
-        result.innerHTML=
-        `<p class="message">
-            Please log in first.
-        </p>`;
-
-        return;
-    }
-
-
-    result.innerHTML=
-    `<p class="message">
-        Searching...
-    </p>`;
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .from("profiles")
-    .select(
-        "id,username,display_name"
-    )
-    .eq(
-        "username",
-        username
-    )
-    .maybeSingle();
-
-
-    if(error){
-
-        result.innerHTML=
-        `<p class="message error">
-            ${escapeHTML(error.message)}
-        </p>`;
-
-        return;
-    }
-
-
-    if(!data){
-
-        result.innerHTML=
-        `<p class="message">
-            ❌ No user found with that username.
-        </p>`;
-
-        return;
-    }
-
-
-    if(data.id===user.id){
-
-        result.innerHTML=
-        `<p class="message">
-            😭 That's your own account.
-        </p>`;
-
-        return;
-    }
-
-
-    const {
-        data:existing,
-        error:friendshipError
-    } =
-    await supabaseClient
-    .from("friendships")
-    .select(
-        "id,requester_id,receiver_id,status"
-    )
-    .or(
-        `and(requester_id.eq.${user.id},receiver_id.eq.${data.id}),and(requester_id.eq.${data.id},receiver_id.eq.${user.id})`
-    )
-    .maybeSingle();
-
-
-    if(friendshipError){
-
-        result.innerHTML=
-        `<p class="message error">
-            ${escapeHTML(
-                friendshipError.message
-            )}
-        </p>`;
-
-        return;
-    }
-
-
-    let action="";
-
-
-    if(!existing){
-
-        action=`
-
-            <button
-                class="primary"
-                onclick="sendFriendRequest('${escapeJS(data.id)}')"
-            >
-                ➕ Send Request
-            </button>
-
-        `;
-
-    }
-    else if(
-        existing.status==="accepted"
-    ){
-
-        action=
-        `<span class="success">
-            ✅ Already friends
-        </span>`;
-
-    }
-    else if(
-        existing.status==="pending" &&
-        existing.requester_id===user.id
-    ){
-
-        action=
-        `<span class="message">
-            📨 Request sent
-        </span>`;
-
-    }
-    else if(
-        existing.status==="pending" &&
-        existing.receiver_id===user.id
-    ){
-
-        action=
-        `<span class="message">
-            📨 Check your friend requests
-        </span>`;
-
-    }
-    else{
-
-        action=`
-
-            <button
-                class="primary"
-                onclick="sendFriendRequest('${escapeJS(data.id)}')"
-            >
-                ➕ Send Request
-            </button>
-
-        `;
-
-    }
-
-
-    result.innerHTML=`
-
-        <div class="friend-row">
-
-            <div>
-
-                👤
-
-                <b>
-                    ${escapeHTML(
-                        data.display_name ||
-                        data.username
-                    )}
-                </b>
-
-                <br>
-
-                <small>
-                    @${escapeHTML(
-                        data.username
-                    )}
-                </small>
-
-            </div>
-
-            <div>
-                ${action}
-            </div>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =====================================================
-   SEND FRIEND REQUEST
-===================================================== */
-
-async function sendFriendRequest(
-    receiverId
-){
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    if(user.id===receiverId){
-
-        alert(
-            "You cannot add yourself."
-        );
-
-        return;
-    }
-
-
-    const {
-        data:existing
-    } =
-    await supabaseClient
-    .from("friendships")
-    .select("id,status")
-    .or(
-        `and(requester_id.eq.${user.id},receiver_id.eq.${receiverId}),and(requester_id.eq.${receiverId},receiver_id.eq.${user.id})`
-    )
-    .maybeSingle();
-
-
-    if(existing){
-
-        alert(
-            "A friendship or request already exists."
-        );
-
-        return;
-    }
-
-
-    const {
-        error
-    } =
-    await supabaseClient
-    .from("friendships")
-    .insert({
-
-        requester_id:user.id,
-
-        receiver_id:receiverId,
-
-        status:"pending"
-
-    });
-
-
-    if(error){
-
-        alert(
-            "Could not send request:\n"+
-            error.message
-        );
-
-        return;
-    }
-
+/* =========================================================
+   RESET DISPLAY
+   ========================================================= */
+
+function resetProgressDisplay() {
 
     document
-        .getElementById(
-            "friendSearchResult"
-        )
-        .innerHTML=
-        `<p class="message success">
-            ✅ Friend request sent!
-        </p>`;
+        .getElementById("dashboardWeight")
+        .textContent = "--";
 
+    document
+        .getElementById("dashboardStartingWeight")
+        .textContent = "--";
 
-    await loadFriendRequests();
+    document
+        .getElementById("dashboardChange")
+        .textContent = "--";
 
+    document
+        .getElementById("dashboardEntries")
+        .textContent = "0";
+
+    document
+        .getElementById("progressStart")
+        .textContent = "--";
+
+    document
+        .getElementById("progressCurrent")
+        .textContent = "--";
+
+    document
+        .getElementById("progressDifference")
+        .textContent = "--";
+
+    document
+        .getElementById("latestUpdate")
+        .textContent =
+        "No fitness data recorded yet.";
+
+    document
+        .getElementById("history")
+        .innerHTML =
+        "No data yet.";
 }
 
 
-/* =====================================================
-   LOAD FRIEND REQUESTS
-===================================================== */
+/* =========================================================
+   ADD FRIEND
+   ========================================================= */
 
-async function loadFriendRequests(){
+async function addFriend() {
 
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    const box =
+    const email =
         document
-        .getElementById(
-            "friendRequests"
-        );
+            .getElementById("friendEmail")
+            .value
+            .trim()
+            .toLowerCase();
 
 
-    box.innerHTML=
-    `<p class="loading">
-        Loading friend requests...
-    </p>`;
+    if (!email) {
+
+        showToast("Enter your friend's email.");
+
+        return;
+    }
 
 
     const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .from("friendships")
-    .select(
-        "id,requester_id"
-    )
-    .eq(
-        "receiver_id",
-        user.id
-    )
-    .eq(
-        "status",
-        "pending"
-    )
-    .order(
-        "id",
-        {
-            ascending:false
-        }
-    );
+        data: { user }
+    } = await supabaseClient.auth.getUser();
 
 
-    if(error){
+    if (!user)
+        return;
 
-        box.innerHTML=
-        `<p class="message error">
-            ${escapeHTML(
-                error.message
-            )}
-        </p>`;
+
+    if (email === user.email.toLowerCase()) {
+
+        showToast("You can't add yourself 😭");
 
         return;
     }
 
 
-    if(!data || !data.length){
+    /*
+       We store the friend's email.
 
-        box.innerHTML=
-        `<p class="message">
-            No pending friend requests.
-        </p>`;
+       Your Supabase table should have:
 
-        return;
-    }
+       friend_requests
+       ----------------
+       id
+       sender_id
+       friend_email
+       created_at
+    */
 
 
-    box.innerHTML="";
-
-
-    for(
-        const request of data
-    ){
-
-        const {
-            data:profile,
-            error:profileError
-        } =
+    const { error } =
         await supabaseClient
-        .from("profiles")
-        .select(
-            "username,display_name"
-        )
-        .eq(
-            "id",
-            request.requester_id
-        )
-        .maybeSingle();
+            .from("friend_requests")
+            .insert({
 
+                sender_id: user.id,
 
-        if(profileError){
+                friend_email: email,
 
-            console.error(
-                profileError
-            );
+                created_at:
+                    new Date().toISOString()
 
-        }
+            });
 
 
-        const displayName =
-            profile?.display_name ||
-            profile?.username ||
-            "User";
-
-
-        const username =
-            profile?.username ||
-            "";
-
-
-        const row =
-            document.createElement(
-                "div"
-            );
-
-
-        row.className =
-            "friend-row";
-
-
-        row.innerHTML=`
-
-            <div>
-
-                👤
-
-                <b>
-                    ${escapeHTML(
-                        displayName
-                    )}
-                </b>
-
-                <br>
-
-                <small>
-                    @${escapeHTML(
-                        username
-                    )}
-                </small>
-
-            </div>
-
-            <div class="friend-actions">
-
-                <button
-                    class="primary"
-                    onclick="respondToFriendRequest(
-                        '${escapeJS(request.id)}',
-                        'accepted'
-                    )"
-                >
-                    Accept
-                </button>
-
-                <button
-                    class="secondary"
-                    onclick="respondToFriendRequest(
-                        '${escapeJS(request.id)}',
-                        'declined'
-                    )"
-                >
-                    Decline
-                </button>
-
-            </div>
-
-        `;
-
-
-        box.appendChild(row);
-
-    }
-
-}
-
-
-/* =====================================================
-   ACCEPT / DECLINE REQUEST
-===================================================== */
-
-async function respondToFriendRequest(
-    requestId,
-    status
-){
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    const {
-        error
-    } =
-    await supabaseClient
-    .from("friendships")
-    .update({
-        status:status
-    })
-    .eq(
-        "id",
-        requestId
-    )
-    .eq(
-        "receiver_id",
-        user.id
-    );
-
-
-    if(error){
-
-        alert(
-            "Could not update request:\n"+
-            error.message
-        );
-
-        return;
-    }
-
-
-    await loadFriendRequests();
-
-    await loadFriendsList();
-
-}
-
-
-/* =====================================================
-   LOAD FRIENDS
-===================================================== */
-
-async function loadFriendsList(){
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    const box =
-        document
-        .getElementById(
-            "friendsList"
-        );
-
-
-    box.innerHTML=
-    `<p class="loading">
-        Loading friends...
-    </p>`;
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .from("friendships")
-    .select(
-        "id,requester_id,receiver_id"
-    )
-    .eq(
-        "status",
-        "accepted"
-    )
-    .or(
-        `requester_id.eq.${user.id},receiver_id.eq.${user.id}`
-    );
-
-
-    if(error){
-
-        box.innerHTML=
-        `<p class="message error">
-            ${escapeHTML(
-                error.message
-            )}
-        </p>`;
-
-        return;
-    }
-
-
-    if(!data || !data.length){
-
-        box.innerHTML=
-        `<p class="message">
-            No friends yet. Search for someone above!
-        </p>`;
-
-        return;
-    }
-
-
-    box.innerHTML="";
-
-
-    for(
-        const friendship of data
-    ){
-
-        const friendId =
-            friendship.requester_id === user.id
-            ?
-            friendship.receiver_id
-            :
-            friendship.requester_id;
-
-
-        const {
-            data:profile
-        } =
-        await supabaseClient
-        .from("profiles")
-        .select(
-            "username,display_name"
-        )
-        .eq(
-            "id",
-            friendId
-        )
-        .maybeSingle();
-
-
-        const username =
-            profile?.username ||
-            "Friend";
-
-
-        const displayName =
-            profile?.display_name ||
-            username;
-
-
-        const row =
-            document.createElement(
-                "div"
-            );
-
-
-        row.className =
-            "friend-row";
-
-
-        row.innerHTML=`
-
-            <div>
-
-                👤
-
-                <b>
-                    ${escapeHTML(
-                        displayName
-                    )}
-                </b>
-
-                <br>
-
-                <small>
-                    @${escapeHTML(
-                        username
-                    )}
-                </small>
-
-            </div>
-
-            <button
-                class="primary"
-                onclick="viewFriendProgress(
-                    '${escapeJS(friendId)}',
-                    '${escapeJS(username)}'
-                )"
-            >
-                📊 View Progress
-            </button>
-
-        `;
-
-
-        box.appendChild(row);
-
-    }
-
-}
-
-
-/* =====================================================
-   SHARING SETTINGS
-===================================================== */
-
-async function loadSharingSettings(){
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    const button =
-        document
-        .getElementById(
-            "sharingButton"
-        );
-
-    const status =
-        document
-        .getElementById(
-            "sharingStatus"
-        );
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .from("sharing_settings")
-    .select(
-        "share_workouts"
-    )
-    .eq(
-        "user_id",
-        user.id
-    )
-    .maybeSingle();
-
-
-    if(error){
-
-        status.textContent =
-            "Could not load sharing settings.";
-
-        button.textContent =
-            "Try Again";
+    if (error) {
 
         console.error(error);
 
-        return;
-    }
-
-
-    /*
-       If there isn't a settings row,
-       create one automatically.
-    */
-
-    if(!data){
-
-        const {
-            data:newSettings,
-            error:createError
-        } =
-        await supabaseClient
-        .from("sharing_settings")
-        .insert({
-
-            user_id:user.id,
-
-            share_workouts:false
-
-        })
-        .select(
-            "share_workouts"
-        )
-        .single();
-
-
-        if(createError){
-
-            console.error(
-                createError
-            );
-
-            status.textContent =
-                "Sharing settings unavailable.";
-
-            button.textContent =
-                "Unavailable";
-
-            return;
-        }
-
-
-        updateSharingUI(
-            newSettings.share_workouts
-        );
-
-        return;
-    }
-
-
-    updateSharingUI(
-        data.share_workouts
-    );
-
-}
-
-
-function updateSharingUI(
-    enabled
-){
-
-    const button =
-        document
-        .getElementById(
-            "sharingButton"
-        );
-
-    const status =
-        document
-        .getElementById(
-            "sharingStatus"
-        );
-
-
-    if(enabled){
-
-        button.textContent =
-            "🔓 Workout Sharing: ON";
-
-        status.textContent =
-            "Your accepted friends can see your workouts.";
-
-    }
-    else{
-
-        button.textContent =
-            "🔒 Workout Sharing: OFF";
-
-        status.textContent =
-            "Your workouts are private.";
-
-    }
-
-}
-
-
-/* =====================================================
-   TOGGLE SHARING
-===================================================== */
-
-async function toggleSharing(){
-
-    const user =
-        await getCurrentUser();
-
-
-    if(!user)
-        return;
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .from("sharing_settings")
-    .select(
-        "share_workouts"
-    )
-    .eq(
-        "user_id",
-        user.id
-    )
-    .maybeSingle();
-
-
-    if(error){
-
-        alert(
+        showToast(
+            "Could not add friend: " +
             error.message
         );
 
@@ -3381,660 +1626,227 @@ async function toggleSharing(){
     }
 
 
-    if(!data){
-
-        const {
-            error:createError
-        } =
-        await supabaseClient
-        .from("sharing_settings")
-        .insert({
-
-            user_id:user.id,
-
-            share_workouts:true
-
-        });
+    document
+        .getElementById("friendEmail")
+        .value = "";
 
 
-        if(createError){
-
-            alert(
-                createError.message
-            );
-
-            return;
-        }
+    showToast("Friend request sent! 🤝");
 
 
-        await loadSharingSettings();
-
-        return;
-    }
-
-
-    const {
-        error:updateError
-    } =
-    await supabaseClient
-    .from("sharing_settings")
-    .update({
-
-        share_workouts:
-            !data.share_workouts
-
-    })
-    .eq(
-        "user_id",
-        user.id
-    );
-
-
-    if(updateError){
-
-        alert(
-            updateError.message
-        );
-
-        return;
-    }
-
-
-    await loadSharingSettings();
-
+    await loadFriends();
 }
 
 
-/* =====================================================
-   FRIEND PROGRESS
-===================================================== */
+/* =========================================================
+   LOAD FRIENDS
+   ========================================================= */
 
-async function viewFriendProgress(
-    friendId,
-    username
-){
+async function loadFriends() {
 
-    const panel =
-        document
-        .getElementById(
-            "friendProgress"
-        );
+    const list =
+        document.getElementById("friendsList");
 
 
-    const content =
-        document
-        .getElementById(
-            "friendProgressContent"
-        );
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
 
 
-    panel.classList.remove(
-        "hidden"
-    );
-
-
-    document
-        .getElementById(
-            "friendProgressTitle"
-        )
-        .textContent =
-        "📊 @"+
-        username+
-        "'s Progress";
-
-
-    content.innerHTML=
-        `<p class="message">
-            Loading...
-        </p>`;
+    if (!user)
+        return;
 
 
     /*
-       Verify sharing is enabled.
+       Load outgoing friend requests.
+
+       This keeps the Friends tab working even
+       before you add the full accepted-friend
+       system.
     */
 
-    const {
-        data:settings,
-        error:settingsError
-    } =
-    await supabaseClient
-    .from("sharing_settings")
-    .select(
-        "share_workouts"
-    )
-    .eq(
-        "user_id",
-        friendId
-    )
-    .maybeSingle();
+
+    const { data, error } =
+        await supabaseClient
+            .from("friend_requests")
+            .select("*")
+            .eq("sender_id", user.id)
+            .order("created_at", {
+                ascending: false
+            });
 
 
-    if(
-        settingsError ||
-        !settings ||
-        !settings.share_workouts
-    ){
+    if (error) {
 
-        content.innerHTML=
-        `<p class="message">
-            🔒 This friend hasn't enabled workout sharing.
-        </p>`;
-
-        return;
-    }
+        console.error(error);
 
 
-    /*
-       Verify the users are actually friends.
-    */
+        list.innerHTML = `
 
-    const user =
-        await getCurrentUser();
+            <div class="form-card">
 
+                <p style="color:#84909d;">
+                    No friends yet.
+                </p>
 
-    const {
-        data:friendship,
-        error:friendshipError
-    } =
-    await supabaseClient
-    .from("friendships")
-    .select("id")
-    .eq(
-        "status",
-        "accepted"
-    )
-    .or(
-        `and(requester_id.eq.${user.id},receiver_id.eq.${friendId}),and(requester_id.eq.${friendId},receiver_id.eq.${user.id})`
-    )
-    .maybeSingle();
+            </div>
 
-
-    if(
-        friendshipError ||
-        !friendship
-    ){
-
-        content.innerHTML=
-        `<p class="message error">
-            You are not friends with this user.
-        </p>`;
+        `;
 
         return;
     }
 
 
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-    .from("workouts")
-    .select(
-        "workout_date,exercise_name,reps"
-    )
-    .eq(
-        "user_id",
-        friendId
-    )
-    .order(
-        "workout_date",
-        {
-            ascending:true
-        }
-    );
+    if (!data || data.length === 0) {
 
+        list.innerHTML = `
 
-    if(error){
+            <div class="form-card">
 
-        content.innerHTML=
-        `<p class="message error">
-            ${escapeHTML(
-                error.message
-            )}
-        </p>`;
+                <p style="color:#84909d;">
+                    No friends added yet.
+                </p>
+
+            </div>
+
+        `;
 
         return;
     }
 
 
-    if(!data || !data.length){
-
-        content.innerHTML=
-        `<p class="message">
-            No shared workouts yet.
-        </p>`;
-
-        return;
-    }
+    list.innerHTML = "";
 
 
-    const stats={};
+    data.forEach(friend => {
+
+        const div =
+            document.createElement("div");
 
 
-    data.forEach(row=>{
-
-        if(!stats[row.exercise_name])
-            stats[row.exercise_name]=[];
+        div.className =
+            "friend-card";
 
 
-        stats[row.exercise_name]
-        .push({
+        const initial =
+            friend.friend_email
+                .charAt(0)
+                .toUpperCase();
 
-            date:
-                row.workout_date,
 
-            reps:
-                Number(row.reps)
+        div.innerHTML = `
 
-        });
+            <div class="friend-info">
+
+                <div class="avatar">
+                    ${initial}
+                </div>
+
+                <div>
+
+                    <div class="friend-name">
+                        ${escapeHTML(friend.friend_email)}
+                    </div>
+
+                    <div class="friend-stat">
+                        Friend request sent
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="green">
+                ✓
+            </div>
+
+        `;
+
+
+        list.appendChild(div);
 
     });
 
-
-    content.innerHTML="";
-
-
-    Object.entries(stats)
-    .forEach(
-        ([exercise,entries])=>{
-
-            entries.sort(
-                (a,b)=>
-                    a.date.localeCompare(
-                        b.date
-                    )
-            );
+}
 
 
-            const values =
-                entries.map(
-                    x=>x.reps
-                );
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+}
 
 
-            const first =
-                values[0];
+/* =========================================================
+   TOAST
+   ========================================================= */
 
-            const latest =
-                values[
-                    values.length-1
-                ];
-
-            const best =
-                Math.max(
-                    ...values
-                );
+let toastTimer;
 
 
-            const change =
-                first>0
-                ?
-                ((latest-first)/first)*100
-                :
-                0;
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
 
 
-            const percentage =
-                best>0
-                ?
-                (latest/best)*100
-                :
-                0;
+    toast.textContent =
+        message;
 
 
-            const row =
-                document.createElement(
-                    "div"
-                );
+    toast.classList.add("show");
 
 
-            row.className =
-                "progress-row";
+    clearTimeout(toastTimer);
 
 
-            row.innerHTML=`
+    toastTimer =
+        setTimeout(() => {
 
-                <div class="progress-head">
+            toast.classList.remove("show");
 
-                    <span>
-                        <b>
-                            ${escapeHTML(
-                                exercise
-                            )}
-                        </b>
-                    </span>
-
-                    <span>
-                        ${latest} reps
-                    </span>
-
-                </div>
-
-
-                <div class="bar">
-
-                    <div
-                        class="fill"
-                        style="
-                            width:${percentage}%;
-                        "
-                    ></div>
-
-                </div>
-
-
-                <div class="mini">
-
-                    Starting:
-                    ${first}
-
-                    · Best:
-                    ${best}
-
-                    · Change:
-                    ${
-                        change>=0
-                        ?"+"
-                        :""
-                    }${change.toFixed(1)}%
-
-                </div>
-
-            `;
-
-
-            content.appendChild(row);
-
-        }
-    );
+        }, 3000);
 
 }
 
 
-/* =====================================================
-   LOAD ALL FRIEND DATA
-===================================================== */
+/* =========================================================
+   STARTUP
+   ========================================================= */
 
-async function loadFriends(){
-
-    await loadFriendRequests();
-
-    await loadFriendsList();
-
-    await loadSharingSettings();
-
-}
-
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-function showPage(
-    page,
-    button
-){
-
-    document
-        .querySelectorAll(".page")
-        .forEach(
-            p=>
-            p.classList.add(
-                "hidden"
-            )
-        );
-
-
-    document
-        .getElementById(page)
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .querySelectorAll(
-            "nav button"
-        )
-        .forEach(
-            b=>
-            b.classList.remove(
-                "active"
-            )
-        );
-
-
-    if(button){
-
-        button.classList.add(
-            "active"
-        );
-
-    }
-
-
-    if(page==="week")
-        renderWeek();
-
-
-    if(page==="month")
-        renderMonth();
-
-
-    if(page==="year")
-        renderYear();
-
-
-    if(page==="progress")
-        renderProgress();
-
-
-    if(page==="friends")
-        loadFriends();
-
-}
-
-
-function showPageById(page){
-
-    document
-        .querySelectorAll(".page")
-        .forEach(
-            p=>
-            p.classList.add(
-                "hidden"
-            )
-        );
-
-
-    document
-        .getElementById(page)
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .querySelectorAll(
-            "nav button"
-        )
-        .forEach(
-            b=>
-            b.classList.remove(
-                "active"
-            )
-        );
-
-
-    const button =
-        document.querySelector(
-            `nav button[onclick*="'${page}'"]`
-        );
-
-
-    if(button){
-
-        button.classList.add(
-            "active"
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   RENDER ALL
-===================================================== */
-
-function renderAll(){
-
-    renderWeek();
-
-    showSelectedDay();
-
-}
-
-
-/* =====================================================
-   INITIALIZE APP
-===================================================== */
-
-async function initializeApp(){
+(async function startApp() {
 
     const {
-        data:{
-            session
-        }
-    } =
-    await supabaseClient
-    .auth
-    .getSession();
+        data: { session }
+    } = await supabaseClient.auth.getSession();
 
 
-    if(!session){
+    if (session) {
 
         document
-            .getElementById(
-                "authSection"
-            )
-            .classList.remove(
-                "hidden"
-            );
+            .getElementById("loginScreen")
+            .style.display = "none";
+
 
         document
-            .getElementById(
-                "accountSection"
-            )
-            .classList.add(
-                "hidden"
-            );
-
-        document
-            .getElementById(
-                "app"
-            )
-            .classList.add(
-                "hidden"
-            );
-
-        return;
-    }
+            .getElementById("userDisplay")
+            .textContent =
+            session.user.email;
 
 
-    document
-        .getElementById(
-            "authSection"
-        )
-        .classList.add(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "accountSection"
-        )
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "app"
-        )
-        .classList.remove(
-            "hidden"
-        );
-
-
-    document
-        .getElementById(
-            "accountEmail"
-        )
-        .textContent =
-        "Logged in as "+
-        session.user.email;
-
-
-    await loadWorkouts();
-
-    /*
-       Friend loading should never prevent
-       the main app from opening.
-    */
-
-    try{
-
-        await loadFriends();
-
-    }
-    catch(error){
-
-        console.error(
-            "Friend loading error:",
-            error
-        );
+        await loadEverything();
 
     }
 
-
-    renderAll();
-
-}
-
-
-/* =====================================================
-   AUTH STATE
-===================================================== */
-
-supabaseClient
-.auth
-.onAuthStateChange(
-    async(
-        event,
-        session
-    )=>{
-
-        if(
-            event==="SIGNED_IN" ||
-            event==="TOKEN_REFRESHED"
-        ){
-
-            await initializeApp();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   START
-===================================================== */
-
-initializeApp();
+})();
 
 </script>
 
