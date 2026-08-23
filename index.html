@@ -1,1196 +1,2107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Fitness Progress</title>
+<title>Fitness Progress</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    body {
-      background: #0f172a;
-      color: white;
-      min-height: 100vh;
-    }
+<style>
 
-    header {
-      padding: 25px;
-      text-align: center;
-      background: #111827;
-      border-bottom: 1px solid #334155;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #0f172a;
+    color: white;
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+    padding: 28px 15px;
+    background: #111827;
+    border-bottom: 1px solid #334155;
+}
+
+header h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #94a3b8;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px;
+    background: #1e293b;
+    flex-wrap: wrap;
+}
+
+nav button {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: #334155;
+    color: white;
+    cursor: pointer;
+}
+
+nav button.active {
+    background: #22c55e;
+    color: #052e16;
+    font-weight: bold;
+}
+
+main {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.card h2 {
+    margin-bottom: 15px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.message {
+    color: #94a3b8;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: white;
+}
+
+button.primary {
+    background: #22c55e;
+    color: #052e16;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+button.secondary {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+button.danger {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.stat {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.stat h3 {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.stat strong {
+    font-size: 28px;
+    color: #22c55e;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar-header button {
+    background: #334155;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.day-name {
+    text-align: center;
+    color: #94a3b8;
+    padding: 8px;
+    font-size: 13px;
+}
+
+.day {
+    min-height: 75px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.day:hover {
+    border-color: #22c55e;
+}
+
+.day.today {
+    border: 2px solid #22c55e;
+}
+
+.day.has-workout {
+    background: #14532d;
+}
+
+.day-number {
+    font-weight: bold;
+}
+
+.day-reps {
+    color: #86efac;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.exercise-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    padding: 13px;
+    border-radius: 9px;
+    margin-bottom: 8px;
+}
+
+.progress-box {
+    margin-top: 15px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 15px;
+    background: #0f172a;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #22c55e;
+    transition: width .4s;
+}
+
+.success {
+    color: #86efac;
+}
+
+.error {
+    color: #fca5a5;
+}
+
+.month-card {
+    margin-bottom: 10px;
+}
+
+@media(max-width:600px) {
+
+    main {
+        padding: 12px;
     }
 
     header h1 {
-      font-size: 32px;
-      margin-bottom: 8px;
+        font-size: 25px;
     }
 
-    header p {
-      color: #94a3b8;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 15px;
-      background: #1e293b;
-      flex-wrap: wrap;
-    }
-
-    nav button {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      background: #334155;
-      color: white;
-      cursor: pointer;
-    }
-
-    nav button:hover {
-      background: #475569;
-    }
-
-    nav button.active {
-      background: #22c55e;
-      color: #052e16;
-      font-weight: bold;
-    }
-
-    main {
-      max-width: 1100px;
-      margin: auto;
-      padding: 25px;
-    }
-
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .card h2 {
-      margin-bottom: 15px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-    }
-
-    .stat {
-      background: #0f172a;
-      padding: 18px;
-      border-radius: 12px;
-      border: 1px solid #334155;
-    }
-
-    .stat h3 {
-      color: #94a3b8;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    .stat strong {
-      font-size: 28px;
-      color: #22c55e;
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .calendar-header button {
-      background: #334155;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 7px;
-      cursor: pointer;
+    .form-row {
+        grid-template-columns: 1fr;
     }
 
     .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-
-    .day-name {
-      text-align: center;
-      color: #94a3b8;
-      padding: 8px;
-      font-size: 13px;
+        gap: 3px;
     }
 
     .day {
-      min-height: 75px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 8px;
-      cursor: pointer;
-    }
-
-    .day:hover {
-      border-color: #22c55e;
-    }
-
-    .day.today {
-      border: 2px solid #22c55e;
-    }
-
-    .day.has-workout {
-      background: #14532d;
-    }
-
-    .day-number {
-      font-weight: bold;
+        min-height: 60px;
+        padding: 5px;
     }
 
     .day-reps {
-      color: #86efac;
-      font-size: 12px;
-      margin-top: 8px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 6px 0;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: white;
-    }
-
-    button.primary {
-      background: #22c55e;
-      color: #052e16;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-
-    button.danger {
-      background: #ef4444;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .exercise-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      background: #0f172a;
-      border-radius: 8px;
-      margin-bottom: 8px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .progress-bar {
-      height: 15px;
-      background: #0f172a;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #22c55e;
-      width: 0%;
-      transition: width 0.4s;
-    }
-
-    .message {
-      color: #94a3b8;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 600px) {
-      main {
-        padding: 15px;
-      }
-
-      header h1 {
-        font-size: 25px;
-      }
-
-      .calendar {
-        gap: 3px;
-      }
-
-      .day {
-        min-height: 60px;
-        padding: 5px;
-      }
-
-      .day-reps {
         font-size: 10px;
-      }
     }
-  </style>
+
+}
+
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>💪 Fitness Progress</h1>
-  <p>Track your workouts. Watch yourself improve.</p>
+
+<h1>💪 Fitness Progress</h1>
+
+<p>Track your workouts. Watch yourself improve.</p>
+
 </header>
 
+
+<!-- AUTH -->
+
+<section id="authSection" class="card" style="max-width:700px;margin:25px auto;">
+
+<h2>🔐 Your Account</h2>
+
+<p class="message">
+Create an account to save your workouts in the cloud and access them from your phone or computer.
+</p>
+
+<input
+    id="email"
+    type="email"
+    placeholder="Email"
+/>
+
+<input
+    id="password"
+    type="password"
+    placeholder="Password (minimum 6 characters)"
+/>
+
+<button
+    class="primary"
+    onclick="createAccount()"
+>
+Create Account
+</button>
+
+<button
+    class="secondary"
+    onclick="login()"
+>
+Log In
+</button>
+
+<p id="authMessage" class="message"></p>
+
+</section>
+
+
+<!-- ACCOUNT -->
+
+<section
+    id="accountSection"
+    class="card hidden"
+    style="max-width:1100px;margin:25px auto;"
+>
+
+<h2>👤 Account</h2>
+
+<p id="accountEmail" class="message"></p>
+
+<button
+    class="secondary"
+    onclick="logout()"
+>
+Log Out
+</button>
+
+</section>
+
+
+<!-- APPLICATION -->
+
+<div id="app" class="hidden">
+
 <nav>
-  <button class="active" onclick="showPage('week', this)">Week</button>
-  <button onclick="showPage('month', this)">Month</button>
-  <button onclick="showPage('year', this)">Year</button>
-  <button onclick="showPage('progress', this)">Progress</button>
+
+<button
+    class="active"
+    onclick="showPage('week', this)"
+>
+Week
+</button>
+
+<button
+    onclick="showPage('month', this)"
+>
+Month
+</button>
+
+<button
+    onclick="showPage('year', this)"
+>
+Year
+</button>
+
+<button
+    onclick="showPage('progress', this)"
+>
+Progress
+</button>
+
 </nav>
+
 
 <main>
 
-  <!-- DASHBOARD -->
 
-  <section id="week" class="page">
+<!-- WEEK -->
 
-    <div class="card">
-      <h2>📊 This Week</h2>
+<section id="week" class="page">
 
-      <div class="stats">
+<div class="card">
 
-        <div class="stat">
-          <h3>Total Reps</h3>
-          <strong id="weekTotal">0</strong>
-        </div>
+<h2>📊 This Week</h2>
 
-        <div class="stat">
-          <h3>Workout Days</h3>
-          <strong id="workoutDays">0</strong>
-        </div>
+<div class="stats">
 
-        <div class="stat">
-          <h3>Best Day</h3>
-          <strong id="bestDay">0</strong>
-        </div>
+<div class="stat">
 
-        <div class="stat">
-          <h3>Exercises</h3>
-          <strong id="exerciseCount">0</strong>
-        </div>
+<h3>Total Reps</h3>
 
-      </div>
-    </div>
+<strong id="weekTotal">0</strong>
 
-    <div class="card">
-
-      <div class="calendar-header">
-
-        <button onclick="previousWeek()">←</button>
-
-        <h2 id="weekTitle"></h2>
-
-        <button onclick="nextWeek()">→</button>
-
-      </div>
-
-      <div class="calendar" id="weekCalendar"></div>
-
-    </div>
-
-    <div class="card">
-
-      <h2>➕ Add Workout</h2>
-
-      <p class="message">
-        Select a date from the calendar, then enter what you did.
-      </p>
-
-      <input id="exerciseName" placeholder="Exercise (e.g. Push-ups)">
-
-      <input
-        id="reps"
-        type="number"
-        min="0"
-        placeholder="Number of reps"
-      >
-
-      <button class="primary" onclick="addWorkout()">
-        Save Workout
-      </button>
-
-      <p id="selectedDate" class="message"></p>
-
-    </div>
-
-    <div class="card">
-
-      <h2>🏋️ Selected Day</h2>
-
-      <div id="dayWorkouts">
-        <p class="message">Select a day to see your workouts.</p>
-      </div>
-
-    </div>
-
-  </section>
+</div>
 
 
-  <!-- MONTH -->
+<div class="stat">
 
-  <section id="month" class="page hidden">
+<h3>Workout Days</h3>
 
-    <div class="card">
+<strong id="workoutDays">0</strong>
 
-      <div class="calendar-header">
-
-        <button onclick="previousMonth()">←</button>
-
-        <h2 id="monthTitle"></h2>
-
-        <button onclick="nextMonth()">→</button>
-
-      </div>
-
-      <div class="calendar" id="monthCalendar"></div>
-
-    </div>
-
-  </section>
+</div>
 
 
-  <!-- YEAR -->
+<div class="stat">
 
-  <section id="year" class="page hidden">
+<h3>Best Day</h3>
 
-    <div class="card">
+<strong id="bestDay">0</strong>
 
-      <div class="calendar-header">
-
-        <button onclick="previousYear()">←</button>
-
-        <h2 id="yearTitle"></h2>
-
-        <button onclick="nextYear()">→</button>
-
-      </div>
-
-      <div id="yearContent"></div>
-
-    </div>
-
-  </section>
+</div>
 
 
-  <!-- PROGRESS -->
+<div class="stat">
 
-  <section id="progress" class="page hidden">
+<h3>Exercises</h3>
 
-    <div class="card">
+<strong id="exerciseCount">0</strong>
 
-      <h2>📈 Your Progress</h2>
+</div>
 
-      <p class="message">
-        Your improvement is calculated from your workout history.
-      </p>
+</div>
 
-      <div id="progressContent"></div>
+</div>
 
-    </div>
 
-  </section>
+<div class="card">
+
+<div class="calendar-header">
+
+<button onclick="previousWeek()">←</button>
+
+<h2 id="weekTitle"></h2>
+
+<button onclick="nextWeek()">→</button>
+
+</div>
+
+<div class="calendar" id="weekCalendar"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>➕ Add Workout</h2>
+
+<p id="selectedDate" class="message"></p>
+
+<input
+    id="exerciseName"
+    placeholder="Exercise e.g. Push-ups"
+/>
+
+<input
+    id="reps"
+    type="number"
+    min="0"
+    placeholder="Number of reps"
+/>
+
+<button
+    class="primary"
+    onclick="addWorkout()"
+>
+Save Workout
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>🏋️ Selected Day</h2>
+
+<div id="dayWorkouts">
+
+<p class="message">
+Select a day to see your workouts.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- MONTH -->
+
+<section id="month" class="page hidden">
+
+<div class="card">
+
+<div class="calendar-header">
+
+<button onclick="previousMonth()">←</button>
+
+<h2 id="monthTitle"></h2>
+
+<button onclick="nextMonth()">→</button>
+
+</div>
+
+<div class="calendar" id="monthCalendar"></div>
+
+</div>
+
+</section>
+
+
+<!-- YEAR -->
+
+<section id="year" class="page hidden">
+
+<div class="card">
+
+<div class="calendar-header">
+
+<button onclick="previousYear()">←</button>
+
+<h2 id="yearTitle"></h2>
+
+<button onclick="nextYear()">→</button>
+
+</div>
+
+<div id="yearContent"></div>
+
+</div>
+
+</section>
+
+
+<!-- PROGRESS -->
+
+<section id="progress" class="page hidden">
+
+<div class="card">
+
+<h2>📈 Your Progress</h2>
+
+<p class="message">
+See how your rep counts have changed over time.
+</p>
+
+<div id="progressContent"></div>
+
+</div>
+
+</section>
+
 
 </main>
+
+</div>
 
 
 <script>
 
-let workouts =
-  JSON.parse(localStorage.getItem("fitnessWorkouts")) || {};
+/* =========================================================
+   SUPABASE CONFIGURATION
+   ========================================================= */
+
+const SUPABASE_URL =
+"YOUR_SUPABASE_PROJECT_URL";
+
+const SUPABASE_KEY =
+"YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================================================
+   APP STATE
+   ========================================================= */
+
+let workouts = {};
 
 let selectedDate = new Date();
 
 let calendarDate = new Date();
 
 
+/* =========================================================
+   BASIC HELPERS
+   ========================================================= */
+
 function dateKey(date) {
 
-  const y = date.getFullYear();
+    const y = date.getFullYear();
 
-  const m = String(date.getMonth() + 1).padStart(2, "0");
+    const m =
+        String(date.getMonth() + 1)
+        .padStart(2, "0");
 
-  const d = String(date.getDate()).padStart(2, "0");
+    const d =
+        String(date.getDate())
+        .padStart(2, "0");
 
-  return `${y}-${m}-${d}`;
-
-}
-
-
-function saveData() {
-
-  localStorage.setItem(
-    "fitnessWorkouts",
-    JSON.stringify(workouts)
-  );
+    return `${y}-${m}-${d}`;
 
 }
 
 
-function showPage(page, button) {
+function escapeHTML(value) {
 
-  document
-    .querySelectorAll(".page")
-    .forEach(p => p.classList.add("hidden"));
-
-  document
-    .getElementById(page)
-    .classList.remove("hidden");
-
-  document
-    .querySelectorAll("nav button")
-    .forEach(b => b.classList.remove("active"));
-
-  button.classList.add("active");
-
-  if (page === "week") renderWeek();
-
-  if (page === "month") renderMonth();
-
-  if (page === "year") renderYear();
-
-  if (page === "progress") renderProgress();
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 
 }
 
 
 function startOfWeek(date) {
 
-  const d = new Date(date);
+    const d = new Date(date);
 
-  const day = d.getDay();
+    const day = d.getDay();
 
-  const difference = day === 0 ? -6 : 1 - day;
+    const difference =
+        day === 0
+        ? -6
+        : 1 - day;
 
-  d.setDate(d.getDate() + difference);
+    d.setDate(
+        d.getDate() + difference
+    );
 
-  return d;
+    return d;
 
 }
 
 
-function renderWeek() {
+/* =========================================================
+   AUTH
+   ========================================================= */
 
-  const start = startOfWeek(calendarDate);
+async function createAccount() {
 
-  const end = new Date(start);
+    const email =
+        document
+        .getElementById("email")
+        .value
+        .trim();
 
-  end.setDate(start.getDate() + 6);
+    const password =
+        document
+        .getElementById("password")
+        .value;
 
-  document.getElementById("weekTitle").textContent =
-    start.toLocaleDateString(
-      "en-US",
-      { month: "short", day: "numeric" }
-    )
-    + " – "
-    +
-    end.toLocaleDateString(
-      "en-US",
-      { month: "short", day: "numeric" }
+
+    if (!email || password.length < 6) {
+
+        setAuthMessage(
+            "Enter a valid email and a password of at least 6 characters.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    setAuthMessage(
+        "Creating your account..."
     );
 
 
-  const calendar =
-    document.getElementById("weekCalendar");
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.signUp({
+            email,
+            password
+        });
 
-  calendar.innerHTML = "";
 
-  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    if (error) {
+
+        setAuthMessage(
+            error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    if (data.session) {
+
+        setAuthMessage(
+            "Account created!",
+            false
+        );
+
+    } else {
+
+        setAuthMessage(
+            "Account created! Check your email to confirm your account."
+        );
+
+    }
+
+}
+
+
+async function login() {
+
+    const email =
+        document
+        .getElementById("email")
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById("password")
+        .value;
+
+
+    if (!email || !password) {
+
+        setAuthMessage(
+            "Enter your email and password.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    setAuthMessage(
+        "Logging in..."
+    );
+
+
+    const {
+        error
+    } =
+        await supabaseClient.auth
+        .signInWithPassword({
+            email,
+            password
+        });
+
+
+    if (error) {
+
+        setAuthMessage(
+            error.message,
+            true
+        );
+
+        return;
+
+    }
+
+
+    await initializeApp();
+
+}
+
+
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    workouts = {};
+
+    document
+        .getElementById("app")
+        .classList.add("hidden");
+
+    document
+        .getElementById("accountSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("authSection")
+        .classList.remove("hidden");
+
+}
+
+
+function setAuthMessage(message, error = false) {
+
+    const element =
+        document.getElementById("authMessage");
+
+    element.textContent = message;
+
+    element.className =
+        error
+        ? "message error"
+        : "message success";
+
+}
+
+
+/* =========================================================
+   LOAD CLOUD WORKOUTS
+   ========================================================= */
+
+async function loadWorkouts() {
+
+    const {
+        data: {
+            user
+        }
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .from("workouts")
+        .select(
+            "workout_date, exercise_name, reps"
+        )
+        .eq(
+            "user_id",
+            user.id
+        )
+        .order(
+            "workout_date",
+            { ascending: true }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not load cloud workouts: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    workouts = {};
+
+
+    data.forEach(row => {
+
+        if (!workouts[row.workout_date])
+            workouts[row.workout_date] = {};
+
+
+        workouts[row.workout_date]
+            [row.exercise_name] =
+            row.reps;
+
+    });
+
+}
+
+
+/* =========================================================
+   SAVE WORKOUT
+   ========================================================= */
+
+async function addWorkout() {
+
+    const name =
+        document
+        .getElementById("exerciseName")
+        .value
+        .trim();
+
+    const reps =
+        Number(
+            document
+            .getElementById("reps")
+            .value
+        );
+
+
+    if (!name) {
+
+        alert("Enter an exercise.");
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(reps) ||
+        reps < 0
+    ) {
+
+        alert("Enter a valid number of reps.");
+
+        return;
+
+    }
+
+
+    const {
+        data: {
+            user
+        }
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (!user) {
+
+        alert("Please log in first.");
+
+        return;
+
+    }
+
+
+    const key =
+        dateKey(selectedDate);
+
+
+    const cleanReps =
+        Math.round(reps);
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("workouts")
+        .upsert(
+            {
+                user_id: user.id,
+                workout_date: key,
+                exercise_name: name,
+                reps: cleanReps
+            },
+            {
+                onConflict:
+                    "user_id,workout_date,exercise_name"
+            }
+        );
+
+
+    if (error) {
+
+        alert(
+            "Could not save workout:\n" +
+            error.message
+        );
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    if (!workouts[key])
+        workouts[key] = {};
+
+
+    workouts[key][name] =
+        cleanReps;
+
+
+    document
+        .getElementById("exerciseName")
+        .value = "";
+
+    document
+        .getElementById("reps")
+        .value = "";
+
+
+    renderAll();
+
+}
+
+
+/* =========================================================
+   DELETE WORKOUT
+   ========================================================= */
+
+async function deleteWorkout(exercise) {
+
+    const key =
+        dateKey(selectedDate);
+
+
+    const {
+        data: {
+            user
+        }
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (!user)
+        return;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+        .from("workouts")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("workout_date", key)
+        .eq("exercise_name", exercise);
+
+
+    if (error) {
+
+        alert(
+            "Could not delete workout:\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    delete workouts[key][exercise];
+
+
+    if (
+        Object.keys(workouts[key]).length === 0
+    ) {
+
+        delete workouts[key];
+
+    }
+
+
+    renderAll();
+
+}
+
+
+/* =========================================================
+   WEEK
+   ========================================================= */
+
+function renderWeek() {
+
+    const start =
+        startOfWeek(calendarDate);
+
+
+    const end =
+        new Date(start);
+
+    end.setDate(
+        end.getDate() + 6
+    );
+
+
+    document
+        .getElementById("weekTitle")
+        .textContent =
+        start.toLocaleDateString(
+            "en-US",
+            {
+                month: "short",
+                day: "numeric"
+            }
+        )
+        +
+        " – "
+        +
+        end.toLocaleDateString(
+            "en-US",
+            {
+                month: "short",
+                day: "numeric"
+            }
+        );
+
+
+    const calendar =
+        document
+        .getElementById("weekCalendar");
+
+
+    calendar.innerHTML = "";
+
+
+    [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+    ]
     .forEach(day => {
 
-      const div = document.createElement("div");
+        const div =
+            document.createElement("div");
 
-      div.className = "day-name";
+        div.className =
+            "day-name";
 
-      div.textContent = day;
+        div.textContent =
+            day;
 
-      calendar.appendChild(div);
+        calendar.appendChild(div);
 
     });
 
 
-  let total = 0;
+    let total = 0;
 
-  let workoutDays = 0;
+    let workoutDays = 0;
 
-  let best = 0;
+    let bestDay = 0;
 
-  const exerciseSet = new Set();
+    const exercises =
+        new Set();
 
 
-  for (let i = 0; i < 7; i++) {
+    for (
+        let i = 0;
+        i < 7;
+        i++
+    ) {
 
-    const date = new Date(start);
+        const date =
+            new Date(start);
 
-    date.setDate(start.getDate() + i);
-
-    const key = dateKey(date);
-
-    const dayData = workouts[key] || {};
-
-    const reps =
-      Object.values(dayData)
-        .reduce(
-          (sum, value) => sum + Number(value),
-          0
+        date.setDate(
+            start.getDate() + i
         );
 
 
-    total += reps;
-
-    if (reps > 0) workoutDays++;
-
-    best = Math.max(best, reps);
-
-    Object.keys(dayData)
-      .forEach(e => exerciseSet.add(e));
+        const key =
+            dateKey(date);
 
 
-    const div =
-      document.createElement("div");
-
-    div.className = "day";
-
-    if (reps > 0)
-      div.classList.add("has-workout");
+        const dayData =
+            workouts[key] || {};
 
 
-    if (key === dateKey(new Date()))
-      div.classList.add("today");
+        const reps =
+            Object.values(dayData)
+            .reduce(
+                (sum, value) =>
+                    sum + Number(value),
+                0
+            );
 
 
-    div.innerHTML = `
-      <div class="day-number">
-        ${date.getDate()}
-      </div>
+        total += reps;
 
-      ${
-        reps > 0
-        ? `<div class="day-reps">${reps} reps</div>`
-        : ""
-      }
-    `;
+        if (reps > 0)
+            workoutDays++;
 
 
-    div.onclick = () => {
-
-      selectedDate = date;
-
-      showSelectedDay();
-
-    };
+        bestDay =
+            Math.max(
+                bestDay,
+                reps
+            );
 
 
-    calendar.appendChild(div);
+        Object.keys(dayData)
+            .forEach(
+                e => exercises.add(e)
+            );
 
-  }
+
+        const div =
+            document.createElement("div");
 
 
-  document.getElementById("weekTotal").textContent =
-    total;
+        div.className = "day";
 
-  document.getElementById("workoutDays").textContent =
-    workoutDays;
 
-  document.getElementById("bestDay").textContent =
-    best;
+        if (reps > 0)
+            div.classList.add(
+                "has-workout"
+            );
 
-  document.getElementById("exerciseCount").textContent =
-    exerciseSet.size;
+
+        if (
+            key === dateKey(new Date())
+        )
+            div.classList.add(
+                "today"
+            );
+
+
+        div.innerHTML = `
+            <div class="day-number">
+                ${date.getDate()}
+            </div>
+
+            ${
+                reps > 0
+                ? `<div class="day-reps">
+                    ${reps} reps
+                   </div>`
+                : ""
+            }
+        `;
+
+
+        div.onclick = () => {
+
+            selectedDate =
+                new Date(date);
+
+            showSelectedDay();
+
+        };
+
+
+        calendar.appendChild(div);
+
+    }
+
+
+    document
+        .getElementById("weekTotal")
+        .textContent = total;
+
+
+    document
+        .getElementById("workoutDays")
+        .textContent =
+        workoutDays;
+
+
+    document
+        .getElementById("bestDay")
+        .textContent =
+        bestDay;
+
+
+    document
+        .getElementById("exerciseCount")
+        .textContent =
+        exercises.size;
 
 }
 
 
+/* =========================================================
+   SELECTED DAY
+   ========================================================= */
+
+function showSelectedDay() {
+
+    const key =
+        dateKey(selectedDate);
+
+
+    const dayData =
+        workouts[key] || {};
+
+
+    document
+        .getElementById("selectedDate")
+        .textContent =
+        selectedDate.toLocaleDateString(
+            "en-US",
+            {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric"
+            }
+        );
+
+
+    const container =
+        document
+        .getElementById("dayWorkouts");
+
+
+    container.innerHTML = "";
+
+
+    if (
+        Object.keys(dayData).length === 0
+    ) {
+
+        container.innerHTML =
+            `<p class="message">
+                No workouts recorded for this day.
+            </p>`;
+
+        return;
+
+    }
+
+
+    Object.entries(dayData)
+        .forEach(
+            ([exercise, reps]) => {
+
+                const row =
+                    document
+                    .createElement("div");
+
+
+                row.className =
+                    "exercise-row";
+
+
+                const text =
+                    document
+                    .createElement("span");
+
+
+                text.innerHTML = `
+                    <b>
+                        ${escapeHTML(exercise)}
+                    </b>
+                    <br>
+                    ${reps} reps
+                `;
+
+
+                const button =
+                    document
+                    .createElement("button");
+
+
+                button.className =
+                    "danger";
+
+                button.textContent =
+                    "Delete";
+
+
+                button.onclick =
+                    () =>
+                    deleteWorkout(
+                        exercise
+                    );
+
+
+                row.appendChild(text);
+
+                row.appendChild(button);
+
+                container.appendChild(row);
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   WEEK NAVIGATION
+   ========================================================= */
+
 function previousWeek() {
 
-  calendarDate.setDate(
-    calendarDate.getDate() - 7
-  );
+    calendarDate.setDate(
+        calendarDate.getDate() - 7
+    );
 
-  renderWeek();
+    renderWeek();
 
 }
 
 
 function nextWeek() {
 
-  calendarDate.setDate(
-    calendarDate.getDate() + 7
-  );
-
-  renderWeek();
-
-}
-
-
-function addWorkout() {
-
-  const name =
-    document
-      .getElementById("exerciseName")
-      .value
-      .trim();
-
-  const reps =
-    Number(
-      document
-        .getElementById("reps")
-        .value
+    calendarDate.setDate(
+        calendarDate.getDate() + 7
     );
 
-
-  if (!name) {
-
-    alert("Enter an exercise.");
-
-    return;
-
-  }
-
-
-  if (!Number.isFinite(reps) || reps < 0) {
-
-    alert("Enter a valid rep count.");
-
-    return;
-
-  }
-
-
-  const key =
-    dateKey(selectedDate);
-
-
-  if (!workouts[key])
-    workouts[key] = {};
-
-
-  workouts[key][name] = reps;
-
-
-  saveData();
-
-
-  document.getElementById("exerciseName").value = "";
-
-  document.getElementById("reps").value = "";
-
-
-  showSelectedDay();
-
-  renderWeek();
+    renderWeek();
 
 }
 
 
-function showSelectedDay() {
-
-  const key =
-    dateKey(selectedDate);
-
-  const dayData =
-    workouts[key] || {};
-
-
-  document.getElementById("selectedDate")
-    .textContent =
-      selectedDate.toLocaleDateString(
-        "en-US",
-        {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-          year: "numeric"
-        }
-      );
-
-
-  const container =
-    document.getElementById("dayWorkouts");
-
-  container.innerHTML = "";
-
-
-  if (Object.keys(dayData).length === 0) {
-
-    container.innerHTML =
-      `<p class="message">
-        No workouts recorded for this day.
-      </p>`;
-
-    return;
-
-  }
-
-
-  Object.entries(dayData)
-    .forEach(([exercise, reps]) => {
-
-      const row =
-        document.createElement("div");
-
-      row.className = "exercise-row";
-
-      row.innerHTML = `
-        <span>
-          <b>${exercise}</b>
-          <br>
-          ${reps} reps
-        </span>
-
-        <button
-          class="danger"
-          onclick="deleteWorkout('${exercise}')"
-        >
-          Delete
-        </button>
-      `;
-
-      container.appendChild(row);
-
-    });
-
-}
-
-
-function deleteWorkout(exercise) {
-
-  const key =
-    dateKey(selectedDate);
-
-  delete workouts[key][exercise];
-
-
-  if (
-    Object.keys(workouts[key]).length === 0
-  ) {
-
-    delete workouts[key];
-
-  }
-
-
-  saveData();
-
-  showSelectedDay();
-
-  renderWeek();
-
-}
-
+/* =========================================================
+   MONTH
+   ========================================================= */
 
 function renderMonth() {
 
-  const year =
-    calendarDate.getFullYear();
+    const year =
+        calendarDate.getFullYear();
 
-  const month =
-    calendarDate.getMonth();
+    const month =
+        calendarDate.getMonth();
 
 
-  document.getElementById("monthTitle")
-    .textContent =
-      new Date(year, month, 1)
+    document
+        .getElementById("monthTitle")
+        .textContent =
+        new Date(year, month, 1)
         .toLocaleDateString(
-          "en-US",
-          {
-            month: "long",
-            year: "numeric"
-          }
+            "en-US",
+            {
+                month: "long",
+                year: "numeric"
+            }
         );
 
 
-  const calendar =
-    document.getElementById("monthCalendar");
+    const calendar =
+        document
+        .getElementById("monthCalendar");
 
-  calendar.innerHTML = "";
+
+    calendar.innerHTML = "";
 
 
-  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+    ]
     .forEach(day => {
 
-      const div =
-        document.createElement("div");
+        const div =
+            document.createElement("div");
 
-      div.className = "day-name";
+        div.className =
+            "day-name";
 
-      div.textContent = day;
+        div.textContent =
+            day;
 
-      calendar.appendChild(div);
+        calendar.appendChild(div);
 
     });
 
 
-  const first =
-    new Date(year, month, 1);
-
-  let startDay =
-    first.getDay();
-
-  startDay =
-    startDay === 0 ? 6 : startDay - 1;
-
-
-  for (let i = 0; i < startDay; i++) {
-
-    const blank =
-      document.createElement("div");
-
-    calendar.appendChild(blank);
-
-  }
-
-
-  const days =
-    new Date(year, month + 1, 0)
-      .getDate();
-
-
-  for (let d = 1; d <= days; d++) {
-
-    const date =
-      new Date(year, month, d);
-
-    const key =
-      dateKey(date);
-
-    const dayData =
-      workouts[key] || {};
-
-
-    const reps =
-      Object.values(dayData)
-        .reduce(
-          (sum, value) => sum + Number(value),
-          0
+    const first =
+        new Date(
+            year,
+            month,
+            1
         );
 
 
-    const div =
-      document.createElement("div");
-
-    div.className = "day";
+    let startDay =
+        first.getDay();
 
 
-    if (reps > 0)
-      div.classList.add("has-workout");
+    startDay =
+        startDay === 0
+        ? 6
+        : startDay - 1;
 
 
-    div.innerHTML = `
-      <div class="day-number">${d}</div>
+    for (
+        let i = 0;
+        i < startDay;
+        i++
+    ) {
 
-      ${
-        reps > 0
-        ? `<div class="day-reps">${reps} reps</div>`
-        : ""
-      }
-    `;
+        calendar.appendChild(
+            document.createElement("div")
+        );
 
-
-    div.onclick = () => {
-
-      selectedDate = date;
-
-      document
-        .querySelector('[onclick*="week"]')
-        .click();
-
-      showSelectedDay();
-
-    };
+    }
 
 
-    calendar.appendChild(div);
+    const days =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
 
-  }
+
+    for (
+        let d = 1;
+        d <= days;
+        d++
+    ) {
+
+        const date =
+            new Date(
+                year,
+                month,
+                d
+            );
+
+
+        const key =
+            dateKey(date);
+
+
+        const dayData =
+            workouts[key] || {};
+
+
+        const reps =
+            Object.values(dayData)
+            .reduce(
+                (sum, value) =>
+                    sum + Number(value),
+                0
+            );
+
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "day";
+
+
+        if (reps > 0)
+            div.classList.add(
+                "has-workout"
+            );
+
+
+        div.innerHTML = `
+            <div class="day-number">
+                ${d}
+            </div>
+
+            ${
+                reps > 0
+                ? `<div class="day-reps">
+                    ${reps} reps
+                   </div>`
+                : ""
+            }
+        `;
+
+
+        div.onclick = () => {
+
+            selectedDate =
+                new Date(date);
+
+            calendarDate =
+                new Date(date);
+
+            showPageById("week");
+
+            renderAll();
+
+        };
+
+
+        calendar.appendChild(div);
+
+    }
 
 }
 
 
 function previousMonth() {
 
-  calendarDate.setMonth(
-    calendarDate.getMonth() - 1
-  );
+    calendarDate.setMonth(
+        calendarDate.getMonth() - 1
+    );
 
-  renderMonth();
+    renderMonth();
 
 }
 
 
 function nextMonth() {
 
-  calendarDate.setMonth(
-    calendarDate.getMonth() + 1
-  );
+    calendarDate.setMonth(
+        calendarDate.getMonth() + 1
+    );
 
-  renderMonth();
+    renderMonth();
 
 }
 
 
+/* =========================================================
+   YEAR
+   ========================================================= */
+
 function renderYear() {
 
-  const year =
-    calendarDate.getFullYear();
+    const year =
+        calendarDate.getFullYear();
 
 
-  document.getElementById("yearTitle")
-    .textContent = year;
+    document
+        .getElementById("yearTitle")
+        .textContent =
+        year;
 
 
-  const container =
-    document.getElementById("yearContent");
-
-  container.innerHTML = "";
-
-
-  for (let month = 0; month < 12; month++) {
-
-    let total = 0;
-
-    let days = 0;
+    const container =
+        document
+        .getElementById("yearContent");
 
 
-    Object.entries(workouts)
-      .forEach(([key, exercises]) => {
-
-        const date =
-          new Date(key);
-
-        if (
-          date.getFullYear() === year &&
-          date.getMonth() === month
-        ) {
-
-          const reps =
-            Object.values(exercises)
-              .reduce(
-                (sum, value) =>
-                  sum + Number(value),
-                0
-              );
-
-          total += reps;
-
-          if (reps > 0)
-            days++;
-
-        }
-
-      });
+    container.innerHTML = "";
 
 
-    const div =
-      document.createElement("div");
+    for (
+        let month = 0;
+        month < 12;
+        month++
+    ) {
 
-    div.className = "stat";
+        let total = 0;
 
-    div.style.marginBottom = "10px";
-
-    div.innerHTML = `
-      <h3>
-        ${new Date(year, month, 1)
-          .toLocaleDateString(
-            "en-US",
-            { month: "long" }
-          )}
-      </h3>
-
-      <strong>${total}</strong>
-
-      <p class="message">
-        ${days} workout days
-      </p>
-    `;
+        let days = 0;
 
 
-    container.appendChild(div);
+        Object.entries(workouts)
+            .forEach(
+                ([key, exercises]) => {
 
-  }
+                    const date =
+                        new Date(
+                            key + "T00:00:00"
+                        );
+
+
+                    if (
+                        date.getFullYear()
+                            === year
+                        &&
+                        date.getMonth()
+                            === month
+                    ) {
+
+                        const reps =
+                            Object.values(
+                                exercises
+                            )
+                            .reduce(
+                                (sum, value) =>
+                                    sum +
+                                    Number(value),
+                                0
+                            );
+
+
+                        total += reps;
+
+
+                        if (reps > 0)
+                            days++;
+
+                    }
+
+                }
+            );
+
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "stat month-card";
+
+
+        div.innerHTML = `
+            <h3>
+                ${
+                    new Date(
+                        year,
+                        month,
+                        1
+                    )
+                    .toLocaleDateString(
+                        "en-US",
+                        {
+                            month: "long"
+                        }
+                    )
+                }
+            </h3>
+
+            <strong>
+                ${total}
+            </strong>
+
+            <p class="message">
+                ${days} workout days
+            </p>
+        `;
+
+
+        container.appendChild(div);
+
+    }
 
 }
 
 
 function previousYear() {
 
-  calendarDate.setFullYear(
-    calendarDate.getFullYear() - 1
-  );
+    calendarDate.setFullYear(
+        calendarDate.getFullYear() - 1
+    );
 
-  renderYear();
+    renderYear();
 
 }
 
 
 function nextYear() {
 
-  calendarDate.setFullYear(
-    calendarDate.getFullYear() + 1
-  );
+    calendarDate.setFullYear(
+        calendarDate.getFullYear() + 1
+    );
 
-  renderYear();
+    renderYear();
 
 }
 
+
+/* =========================================================
+   PROGRESS
+   ========================================================= */
 
 function renderProgress() {
 
-  const container =
-    document.getElementById("progressContent");
-
-  container.innerHTML = "";
-
-
-  const exerciseStats = {};
+    const container =
+        document
+        .getElementById("progressContent");
 
 
-  Object.values(workouts)
-    .forEach(day => {
+    container.innerHTML = "";
 
-      Object.entries(day)
-        .forEach(([exercise, reps]) => {
 
-          if (!exerciseStats[exercise])
-            exerciseStats[exercise] = [];
+    const stats = {};
 
-          exerciseStats[exercise].push(
-            Number(reps)
-          );
+
+    Object.values(workouts)
+        .forEach(day => {
+
+            Object.entries(day)
+                .forEach(
+                    ([exercise, reps]) => {
+
+                        if (
+                            !stats[exercise]
+                        )
+                            stats[exercise] = [];
+
+
+                        stats[exercise]
+                            .push(
+                                Number(reps)
+                            );
+
+                    }
+                );
 
         });
 
-    });
+
+    if (
+        Object.keys(stats).length === 0
+    ) {
+
+        container.innerHTML =
+            `<p class="message">
+                Start recording workouts to see your progress.
+            </p>`;
+
+        return;
+
+    }
 
 
-  if (
-    Object.keys(exerciseStats).length === 0
-  ) {
+    Object.entries(stats)
+        .forEach(
+            ([exercise, values]) => {
 
-    container.innerHTML =
-      `<p class="message">
-        Start recording workouts to see your progress.
-      </p>`;
-
-    return;
-
-  }
+                const first =
+                    values[0];
 
 
-  Object.entries(exerciseStats)
-    .forEach(([exercise, values]) => {
-
-      const first = values[0];
-
-      const latest =
-        values[values.length - 1];
+                const latest =
+                    values[values.length - 1];
 
 
-      let increase = 0;
-
-      if (first > 0) {
-
-        increase =
-          ((latest - first) / first) * 100;
-
-      }
-
-
-      const div =
-        document.createElement("div");
-
-      div.className = "card";
+                const increase =
+                    first > 0
+                    ? (
+                        (latest - first)
+                        / first
+                    ) * 100
+                    : 0;
 
 
-      div.innerHTML = `
-        <h3>${exercise}</h3>
-
-        <p class="message">
-          Starting: ${first} reps
-        </p>
-
-        <p class="message">
-          Latest: ${latest} reps
-        </p>
-
-        <p class="message">
-          Change:
-          <b>
-            ${increase >= 0 ? "+" : ""}
-            ${increase.toFixed(1)}%
-          </b>
-        </p>
-
-        <div class="progress-bar">
-
-          <div
-            class="progress-fill"
-            style="
-              width:${Math.min(
-                100,
-                Math.max(0, increase)
-              )}%
-            "
-          ></div>
-
-        </div>
-      `;
+                const card =
+                    document
+                    .createElement("div");
 
 
-      container.appendChild(div);
+                card.className =
+                    "card";
 
-    });
+
+                card.innerHTML = `
+
+                    <h3>
+                        ${escapeHTML(exercise)}
+                    </h3>
+
+                    <p class="message">
+                        Starting:
+                        <b>${first}</b> reps
+                    </p>
+
+                    <p class="message">
+                        Latest:
+                        <b>${latest}</b> reps
+                    </p>
+
+                    <p class="message">
+                        Change:
+                        <b class="${
+                            increase >= 0
+                            ? "success"
+                            : "error"
+                        }">
+                            ${
+                                increase >= 0
+                                ? "+"
+                                : ""
+                            }${increase.toFixed(1)}%
+                        </b>
+                    </p>
+
+                    <div class="progress-box">
+
+                        <div class="progress-bar">
+
+                            <div
+                                class="progress-fill"
+                                style="
+                                    width:
+                                    ${Math.min(
+                                        100,
+                                        Math.max(
+                                            0,
+                                            increase
+                                        )
+                                    )}%
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(card);
+
+            }
+        );
 
 }
 
 
-renderWeek();
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
 
-showSelectedDay();
+function showPage(page, button) {
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            p =>
+            p.classList.add("hidden")
+        );
 
-<script>
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL_HERE";
-const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+    document
+        .getElementById(page)
+        .classList.remove("hidden");
+
+
+    document
+        .querySelectorAll("nav button")
+        .forEach(
+            b =>
+            b.classList.remove("active")
+        );
+
+
+    button.classList.add("active");
+
+
+    if (page === "week")
+        renderWeek();
+
+    if (page === "month")
+        renderMonth();
+
+    if (page === "year")
+        renderYear();
+
+    if (page === "progress")
+        renderProgress();
+
+}
+
+
+function showPageById(page) {
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            p =>
+            p.classList.add("hidden")
+        );
+
+
+    document
+        .getElementById(page)
+        .classList.remove("hidden");
+
+
+    document
+        .querySelectorAll("nav button")
+        .forEach(
+            b =>
+            b.classList.remove("active")
+        );
+
+
+    document
+        .querySelector(
+            `nav button[onclick*="'${page}'"]`
+        )
+        ?.classList.add("active");
+
+}
+
+
+/* =========================================================
+   RENDER EVERYTHING
+   ========================================================= */
+
+function renderAll() {
+
+    renderWeek();
+
+    showSelectedDay();
+
+}
+
+
+/* =========================================================
+   INITIALIZE APPLICATION
+   ========================================================= */
+
+async function initializeApp() {
+
+    const {
+        data: {
+            session
+        }
+    } =
+        await supabaseClient
+        .auth.getSession();
+
+
+    if (!session) {
+
+        document
+            .getElementById("authSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("accountSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("app")
+            .classList.add("hidden");
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("authSection")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("accountSection")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("app")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("accountEmail")
+        .textContent =
+        "Logged in as " +
+        session.user.email;
+
+
+    await loadWorkouts();
+
+
+    renderAll();
+
+}
+
+
+supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+        if (
+            event === "SIGNED_IN"
+            ||
+            event === "TOKEN_REFRESHED"
+        ) {
+
+            await initializeApp();
+
+        }
+
+    }
 );
 
-console.log("Supabase connected!");
+
+/* Start */
+
+initializeApp();
+
 </script>
 
 </body>
